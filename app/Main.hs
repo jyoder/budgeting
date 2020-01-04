@@ -1,7 +1,7 @@
 module Main where
 
 import Lib
-import Prelude
+import Protolude
 
 main :: IO ()
 main = someFunc
