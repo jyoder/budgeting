@@ -1,13 +1,13 @@
 module BudgetRecords (BudgetRecords (..)) where
 
-import InitiativeRecord
+import PriorityRecord
 import Protolude
 import SalaryRecord
 import TeammateRecord
 
 data BudgetRecords
   = BudgetRecords
-      { initiativeRecords :: [InitiativeRecord],
+      { priorityRecords :: [PriorityRecord],
         salaryRecords :: [SalaryRecord],
         teammateRecords :: [TeammateRecord]
       }
