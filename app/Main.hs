@@ -1,8 +1,8 @@
 module Main where
 
-import Actions
-import Application
+import qualified Actions2
+import qualified Application2
 import Protolude
 
 main :: IO ()
-main = run actionsIo
+main = Application2.run Actions2.makeIo

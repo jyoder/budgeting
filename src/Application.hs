@@ -1,10 +1,20 @@
 module Application (run) where
 
 import Actions
-import BudgetRecords
 import Data.Csv (FromNamedRecord, decodeByName)
+import PriorityRecord
 import Protolude
+import SalaryRecord
+import TeammateRecord
 import Prelude (String)
+
+data BudgetRecords
+  = BudgetRecords
+      { priorityRecords :: [PriorityRecord],
+        salaryRecords :: [SalaryRecord],
+        teammateRecords :: [TeammateRecord]
+      }
+  deriving (Show)
 
 data FileConfig
   = FileConfig
