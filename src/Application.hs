@@ -1,6 +1,6 @@
-module Application2 (run) where
+module Application (run) where
 
-import qualified Actions2
+import qualified Actions
 import qualified Argument
 import qualified BudgetRecords
 import qualified Control.Monad.Except as E
@@ -13,17 +13,17 @@ import qualified Result
 
 type App a = E.ExceptT Error.T IO a
 
-run :: Actions2.T -> IO ()
+run :: Actions.T -> IO ()
 run actions = do
   result <- runExceptT (_run actions)
-  either (Actions2.print actions . Error.toText) return result
+  either (Actions.print actions . Error.toText) return result
 
-_run :: Actions2.T -> App ()
+_run :: Actions.T -> App ()
 _run actions = do
-  arguments <- lift $ Actions2.getArguments actions
+  arguments <- lift $ Actions.getArguments actions
   fileConfig <- E.liftEither $ _parseArguments arguments
-  records <- _loadBudgetRecords (Actions2.read actions) fileConfig
-  lift $ Actions2.print actions $ show records
+  records <- _loadBudgetRecords (Actions.read actions) fileConfig
+  lift $ Actions.print actions $ show records
 
 _parseArguments :: [Argument.T] -> Result.T FileConfig.T
 _parseArguments arguments = case _argumentToPath <$> arguments of

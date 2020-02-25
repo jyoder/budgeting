@@ -1,4 +1,4 @@
-module Actions2 (T (..), makeIo) where
+module Actions (T (..), makeIo) where
 
 import qualified Argument
 import qualified Control.Monad.Except as CME
