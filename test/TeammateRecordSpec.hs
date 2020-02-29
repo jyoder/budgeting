@@ -10,5 +10,8 @@ spec :: Spec
 spec = do
   describe "decodeByName" $ do
     it "returns a TeammateRecord when all columns are present" $ do
-      decodeByName "Budget hc#,First Name,Last Name,Team\n123,Bob,Bobberson,49ers"
-        `shouldBe` Right (fromList ["Budget hc#", "First Name", "Last Name", "Team"], fromList [TeammateRecord "123" "Bob" "Bobberson" "49ers"])
+      decodeByName "Name,Bhc,Teams Q1,Teams Q2,Teams Q3,Teams Q4\nBob Bobberson,123,49ers,Raiders,Dolphins,49ers"
+        `shouldBe` Right
+          ( fromList ["Name", "Bhc", "Teams Q1", "Teams Q2", "Teams Q3", "Teams Q4"],
+            fromList [TeammateRecord "Bob Bobberson" "123" "49ers" "Raiders" "Dolphins" "49ers"]
+          )
