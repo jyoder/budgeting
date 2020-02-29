@@ -10,8 +10,8 @@ spec :: Spec
 spec = do
   describe "decodeByName" $ do
     it "returns a SalaryRecord when all columns are present" $ do
-      decodeByName "Budget hc#,\"Last name, First name\",Total Annualized Comp @ Target\nBob,Bobberson,100000.12"
+      decodeByName "Bhc,Name,Salary Q1,Salary Q2,Salary Q3,Salary Q4\n123,Bob Bobberson,100000.12,110000.00,110001.10,110000"
         `shouldBe` Right
-          ( fromList ["Budget hc#", "Last name, First name", "Total Annualized Comp @ Target"],
-            fromList [SalaryRecord "Bob" "Bobberson" 100000.12]
+          ( fromList ["Bhc", "Name", "Salary Q1", "Salary Q2", "Salary Q3", "Salary Q4"],
+            fromList [SalaryRecord "123" "Bob Bobberson" 100000.12 110000.00 110001.10 110000.00]
           )
