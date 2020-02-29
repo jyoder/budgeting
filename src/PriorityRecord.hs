@@ -16,7 +16,7 @@ data PriorityRecord
 instance FromNamedRecord PriorityRecord where
   parseNamedRecord m =
     PriorityRecord
-      <$> m .: "Team"
+      <$> m .: "Name"
       <*> m .: "Priority Q1"
       <*> m .: "Priority Q2"
       <*> m .: "Priority Q3"

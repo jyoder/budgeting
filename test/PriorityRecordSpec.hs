@@ -11,8 +11,8 @@ spec = do
   describe "decodeByName" $ do
     it "returns a PriorityRecord when all columns are present" $
       do
-        decodeByName "Team,Priority Q1,Priority Q2,Priority Q3,Priority Q4\n49ers,Football,Soccer,Hockey,Foosball"
+        decodeByName "Name,Priority Q1,Priority Q2,Priority Q3,Priority Q4\n49ers,Football,Soccer,Hockey,Foosball"
         `shouldBe` Right
-          ( fromList ["Team", "Priority Q1", "Priority Q2", "Priority Q3", "Priority Q4"],
+          ( fromList ["Name", "Priority Q1", "Priority Q2", "Priority Q3", "Priority Q4"],
             fromList [PriorityRecord "49ers" "Football" "Soccer" "Hockey" "Foosball"]
           )
