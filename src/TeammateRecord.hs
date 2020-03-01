@@ -1,10 +1,10 @@
-module TeammateRecord (TeammateRecord (..)) where
+module TeammateRecord (T (..)) where
 
 import Data.Csv ((.:), FromNamedRecord (parseNamedRecord))
 import Protolude
 
-data TeammateRecord
-  = TeammateRecord
+data T
+  = T
       { name :: !Text,
         bhc :: !Text,
         teamsQ1 :: !Text,
@@ -14,9 +14,9 @@ data TeammateRecord
       }
   deriving (Show, Eq)
 
-instance FromNamedRecord TeammateRecord where
+instance FromNamedRecord T where
   parseNamedRecord m =
-    TeammateRecord
+    T
       <$> m .: "Name"
       <*> m .: "Bhc"
       <*> m .: "Teams Q1"
