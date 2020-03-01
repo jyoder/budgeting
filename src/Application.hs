@@ -45,4 +45,6 @@ _loadBudgetRecords readF FileConfig.T {FileConfig.priorityFile, FileConfig.salar
 _loadRecords :: Csv.FromNamedRecord f => (Path.T -> App Text) -> Path.T -> App [f]
 _loadRecords readF filePath = do
   csvData <- readF filePath
-  E.liftEither $ Csv.decode csvData
+  E.liftEither $ either prependPath Result.success (Csv.decode csvData)
+  where
+    prependPath = Result.prepend $ Path.toText filePath <> ": "
