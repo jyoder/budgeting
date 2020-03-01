@@ -37,7 +37,12 @@ _readIo path = do
     filePath = Path.toFilePath path
 
 _decode :: B.ByteString -> Text
-_decode = T.decodeUtf8With E.lenientDecode . B.toStrict
+_decode = T.decodeUtf8With E.lenientDecode . B.toStrict . _dropBom
+
+_dropBom :: B.ByteString -> B.ByteString
+_dropBom byteString
+  | B.take 3 byteString == B.pack [0xEF, 0xBB, 0xBF] = B.drop 3 byteString
+  | otherwise = byteString
 
 printIo :: Text -> IO ()
 printIo = putStrLn
