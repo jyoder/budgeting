@@ -1,10 +1,10 @@
-module SalaryRecord (SalaryRecord (..)) where
+module SalaryRecord (T (..)) where
 
 import Data.Csv ((.:), FromNamedRecord (parseNamedRecord))
 import Protolude
 
-data SalaryRecord
-  = SalaryRecord
+data T
+  = T
       { bhc :: !Text,
         name :: !Text,
         salaryQ1 :: !Double,
@@ -14,9 +14,9 @@ data SalaryRecord
       }
   deriving (Show, Eq)
 
-instance FromNamedRecord SalaryRecord where
+instance FromNamedRecord T where
   parseNamedRecord m =
-    SalaryRecord
+    T
       <$> m .: "Bhc"
       <*> m .: "Name"
       <*> m .: "Salary Q1"

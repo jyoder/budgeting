@@ -2,13 +2,13 @@ module BudgetRecords (T (..)) where
 
 import qualified PriorityRecord
 import Protolude
-import SalaryRecord
+import qualified SalaryRecord
 import TeammateRecord
 
 data T
   = T
       { priorityRecords :: [PriorityRecord.T],
-        salaryRecords :: [SalaryRecord],
+        salaryRecords :: [SalaryRecord.T],
         teammateRecords :: [TeammateRecord]
       }
   deriving (Show)
