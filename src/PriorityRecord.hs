@@ -1,10 +1,10 @@
-module PriorityRecord (PriorityRecord (..)) where
+module PriorityRecord (T (..)) where
 
 import Data.Csv ((.:), FromNamedRecord (parseNamedRecord))
 import Protolude
 
-data PriorityRecord
-  = PriorityRecord
+data T
+  = T
       { name :: !Text,
         priorityQ1 :: !Text,
         priorityQ2 :: !Text,
@@ -13,9 +13,9 @@ data PriorityRecord
       }
   deriving (Show, Eq)
 
-instance FromNamedRecord PriorityRecord where
+instance FromNamedRecord T where
   parseNamedRecord m =
-    PriorityRecord
+    T
       <$> m .: "Name"
       <*> m .: "Priority Q1"
       <*> m .: "Priority Q2"
