@@ -3,7 +3,7 @@ module Path (T, toText, fromText, toFilePath) where
 import qualified Data.Text
 import Protolude
 
-newtype T = T Text deriving (Show)
+newtype T = T Text deriving (Show, Eq, Ord)
 
 toText :: T -> Text
 toText (T text) = text

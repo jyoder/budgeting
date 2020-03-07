@@ -54,6 +54,7 @@ tests:
     dependencies:
     - budgeting
     - hspec
+    - containers
 
 ghc-options:
 - -Wall

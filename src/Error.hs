@@ -2,9 +2,9 @@ module Error (T, make, toText, prepend) where
 
 import Protolude
 
-newtype T = T Message deriving (Show)
+newtype T = T Message deriving (Show, Eq)
 
-newtype Message = Message Text deriving (Show)
+newtype Message = Message Text deriving (Show, Eq)
 
 make :: Text -> T
 make = T . Message
