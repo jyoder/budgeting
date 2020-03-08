@@ -1,9 +1,8 @@
 module MockEnvironment (T, make, getArguments) where
 
 import qualified Argument
-import Protolude
 
-newtype T = T [Argument.T] deriving (Show)
+newtype T = T [Argument.T]
 
 make :: [Argument.T] -> T
 make = T
