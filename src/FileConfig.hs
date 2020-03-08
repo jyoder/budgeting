@@ -5,8 +5,8 @@ import Protolude
 
 data T
   = T
-      { priorityFile :: Path.T,
-        salaryFile :: Path.T,
-        teammateFile :: Path.T
+      { prioritiesFile :: Path.T,
+        salariesFile :: Path.T,
+        teammatesFile :: Path.T
       }
   deriving (Show)
