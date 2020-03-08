@@ -13,4 +13,4 @@ toText :: T -> Text
 toText (T (Message text)) = text
 
 prepend :: Text -> T -> T
-prepend context err = make $ context <> toText err
+prepend context error = make $ context <> toText error
