@@ -36,10 +36,10 @@ _argumentToPath :: Argument.T -> Path.T
 _argumentToPath = Path.fromText . Argument.toText
 
 _loadBudgetRecords :: Monad m => (Path.T -> App m Text) -> FileConfig.T -> App m BudgetRecords.T
-_loadBudgetRecords read FileConfig.T {FileConfig.priorityFile, FileConfig.salaryFile, FileConfig.teammateFile} = do
-  priorityRecords <- _loadRecords read priorityFile
-  salaryRecords <- _loadRecords read salaryFile
-  teammateRecords <- _loadRecords read teammateFile
+_loadBudgetRecords read FileConfig.T {FileConfig.prioritiesFile, FileConfig.salariesFile, FileConfig.teammatesFile} = do
+  priorityRecords <- _loadRecords read prioritiesFile
+  salaryRecords <- _loadRecords read salariesFile
+  teammateRecords <- _loadRecords read teammatesFile
   return $ BudgetRecords.T priorityRecords salaryRecords teammateRecords
 
 _loadRecords :: Monad m => Csv.FromNamedRecord f => (Path.T -> App m Text) -> Path.T -> App m [f]
