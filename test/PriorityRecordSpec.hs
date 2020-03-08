@@ -8,6 +8,14 @@ import Test.Hspec
 
 spec :: Spec
 spec = do
+  describe "accessors" $ do
+    it "provides access to the fields in the record" $ do
+      let record = PriorityRecord.T "49ers" "Football" "Soccer" "Hockey" "Foosball"
+      PriorityRecord.name record `shouldBe` "49ers"
+      PriorityRecord.priorityQ1 record `shouldBe` "Football"
+      PriorityRecord.priorityQ2 record `shouldBe` "Soccer"
+      PriorityRecord.priorityQ3 record `shouldBe` "Hockey"
+      PriorityRecord.priorityQ4 record `shouldBe` "Foosball"
   describe "decodeByName" $ do
     it "returns a PriorityRecord when all columns are present" $
       do
