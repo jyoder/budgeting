@@ -8,6 +8,7 @@ import qualified Data.Text as DT
 import qualified Data.Text.Encoding as DTE
 import qualified Data.Text.Encoding.Error as DTEE
 import qualified Error
+import qualified FileFormat
 import qualified Path
 import Protolude
 import qualified Result
@@ -31,12 +32,7 @@ _read' path = do
     filePath = Path.toFilePath path
 
 _decode :: DBL.ByteString -> Text
-_decode = DTE.decodeUtf8With DTEE.lenientDecode . DBL.toStrict . _dropBom
-
-_dropBom :: DBL.ByteString -> DBL.ByteString
-_dropBom byteString
-  | DBL.take 3 byteString == DBL.pack [0xEF, 0xBB, 0xBF] = DBL.drop 3 byteString
-  | otherwise = byteString
+_decode = DTE.decodeUtf8With DTEE.lenientDecode . DBL.toStrict . FileFormat.dropByteOrderMark
 
 _print :: Text -> IO ()
 _print = putStrLn
