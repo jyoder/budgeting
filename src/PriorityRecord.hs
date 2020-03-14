@@ -1,17 +1,19 @@
 module PriorityRecord (T (..)) where
 
 import Data.Csv ((.:), FromNamedRecord (parseNamedRecord))
+import qualified Name
+import qualified Priority
 import Protolude
 
 data T
   = T
-      { name :: !Text,
-        priorityQ1 :: !Text,
-        priorityQ2 :: !Text,
-        priorityQ3 :: !Text,
-        priorityQ4 :: !Text
+      { name :: !Name.T,
+        priorityQ1 :: !Priority.T,
+        priorityQ2 :: !Priority.T,
+        priorityQ3 :: !Priority.T,
+        priorityQ4 :: !Priority.T
       }
-  deriving (Show, Eq)
+  deriving (Show, Eq, Ord)
 
 instance FromNamedRecord T where
   parseNamedRecord m =

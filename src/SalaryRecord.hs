@@ -1,18 +1,21 @@
 module SalaryRecord (T (..)) where
 
+import qualified Bhc
 import Data.Csv ((.:), FromNamedRecord (parseNamedRecord))
+import qualified Name
 import Protolude
+import qualified Salary
 
 data T
   = T
-      { bhc :: !Text,
-        name :: !Text,
-        salaryQ1 :: !Double,
-        salaryQ2 :: !Double,
-        salaryQ3 :: !Double,
-        salaryQ4 :: !Double
+      { bhc :: !Bhc.T,
+        name :: !Name.T,
+        salaryQ1 :: !Salary.T,
+        salaryQ2 :: !Salary.T,
+        salaryQ3 :: !Salary.T,
+        salaryQ4 :: !Salary.T
       }
-  deriving (Show, Eq)
+  deriving (Show, Eq, Ord)
 
 instance FromNamedRecord T where
   parseNamedRecord m =

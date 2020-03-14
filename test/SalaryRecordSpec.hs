@@ -1,8 +1,9 @@
 module SalaryRecordSpec (spec) where
 
-import Data.Csv (decodeByName)
-import Data.Vector (fromList)
+import qualified Data.Csv
+import qualified Data.Vector
 import Protolude
+import qualified Salary
 import qualified SalaryRecord
 import Test.Hspec
 
@@ -10,17 +11,19 @@ spec :: Spec
 spec = do
   describe "accessors" $ do
     it "provides access to fields in the record" $ do
-      let record = SalaryRecord.T "123" "Bob Bobberson" 100000.12 110000.00 110001.10 110000.00
+      let (sQ1, sQ2, sQ3, sQ4) = (Salary.make 100000.12, Salary.make 110000.00, Salary.make 110001.10, Salary.make 110000.00)
+      let record = SalaryRecord.T "123" "Bob Bobberson" sQ1 sQ2 sQ3 sQ4
       SalaryRecord.bhc record `shouldBe` "123"
       SalaryRecord.name record `shouldBe` "Bob Bobberson"
-      SalaryRecord.salaryQ1 record `shouldBe` 100000.12
-      SalaryRecord.salaryQ2 record `shouldBe` 110000.00
-      SalaryRecord.salaryQ3 record `shouldBe` 110001.10
-      SalaryRecord.salaryQ4 record `shouldBe` 110000.00
+      SalaryRecord.salaryQ1 record `shouldBe` sQ1
+      SalaryRecord.salaryQ2 record `shouldBe` sQ2
+      SalaryRecord.salaryQ3 record `shouldBe` sQ3
+      SalaryRecord.salaryQ4 record `shouldBe` sQ4
   describe "decodeByName" $ do
     it "returns a SalaryRecord when all columns are present" $ do
-      decodeByName "Bhc,Name,Salary Q1,Salary Q2,Salary Q3,Salary Q4\n123,Bob Bobberson,100000.12,110000.00,110001.10,110000"
+      let (sQ1, sQ2, sQ3, sQ4) = (Salary.make 100000.12, Salary.make 110000.00, Salary.make 110001.10, Salary.make 110000.00)
+      Data.Csv.decodeByName "Bhc,Name,Salary Q1,Salary Q2,Salary Q3,Salary Q4\n123,Bob Bobberson,100000.12,110000.00,110001.10,110000"
         `shouldBe` Right
-          ( fromList ["Bhc", "Name", "Salary Q1", "Salary Q2", "Salary Q3", "Salary Q4"],
-            fromList [SalaryRecord.T "123" "Bob Bobberson" 100000.12 110000.00 110001.10 110000.00]
+          ( Data.Vector.fromList ["Bhc", "Name", "Salary Q1", "Salary Q2", "Salary Q3", "Salary Q4"],
+            Data.Vector.fromList [SalaryRecord.T "123" "Bob Bobberson" sQ1 sQ2 sQ3 sQ4]
           )

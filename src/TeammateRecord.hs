@@ -1,18 +1,21 @@
 module TeammateRecord (T (..)) where
 
+import qualified Bhc
 import Data.Csv ((.:), FromNamedRecord (parseNamedRecord))
+import qualified Name
 import Protolude
+import qualified Teams
 
 data T
   = T
-      { bhc :: !Text,
-        name :: !Text,
-        teamsQ1 :: !Text,
-        teamsQ2 :: !Text,
-        teamsQ3 :: !Text,
-        teamsQ4 :: !Text
+      { bhc :: !Bhc.T,
+        name :: !Name.T,
+        teamsQ1 :: !Teams.T,
+        teamsQ2 :: !Teams.T,
+        teamsQ3 :: !Teams.T,
+        teamsQ4 :: !Teams.T
       }
-  deriving (Show, Eq)
+  deriving (Show, Eq, Ord)
 
 instance FromNamedRecord T where
   parseNamedRecord m =
