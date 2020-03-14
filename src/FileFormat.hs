@@ -1,9 +1,10 @@
 module FileFormat (dropByteOrderMark) where
 
-import qualified Data.ByteString.Lazy as DBL
+import qualified Data.ByteString.Lazy as ByteString
 import Protolude
 
-dropByteOrderMark :: DBL.ByteString -> DBL.ByteString
+dropByteOrderMark :: ByteString.ByteString -> ByteString.ByteString
 dropByteOrderMark byteString
-  | DBL.take 3 byteString == DBL.pack [0xEF, 0xBB, 0xBF] = DBL.drop 3 byteString
+  | ByteString.take 3 byteString == ByteString.pack [0xEF, 0xBB, 0xBF] =
+    ByteString.drop 3 byteString
   | otherwise = byteString

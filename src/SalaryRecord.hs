@@ -1,7 +1,8 @@
 module SalaryRecord (T (..)) where
 
 import qualified Bhc
-import Data.Csv ((.:), FromNamedRecord (parseNamedRecord))
+import Data.Csv ((.:))
+import qualified Data.Csv
 import qualified Name
 import Protolude
 import qualified Salary
@@ -17,7 +18,7 @@ data T
       }
   deriving (Show, Eq, Ord)
 
-instance FromNamedRecord T where
+instance Data.Csv.FromNamedRecord T where
   parseNamedRecord m =
     T
       <$> m .: "Bhc"

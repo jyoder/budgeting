@@ -5,5 +5,4 @@ import Protolude
 
 newtype T = T Text
   deriving (Show, Eq, Ord)
-  deriving newtype (IsString)
-  deriving newtype (Data.Csv.FromField)
+  deriving newtype (IsString, Data.Csv.FromField)

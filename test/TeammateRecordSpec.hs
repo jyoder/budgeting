@@ -3,7 +3,6 @@ module TeammateRecordSpec (spec) where
 import Data.Csv (decodeByName)
 import Data.Vector (fromList)
 import Protolude
-import qualified Team
 import qualified TeammateRecord
 import qualified Teams
 import Test.Hspec
