@@ -5,11 +5,14 @@ import qualified Argument
 import qualified BudgetRecords
 import qualified Control.Monad.Except as E
 import qualified Csv
+import qualified Data.Text
 import qualified Error
 import qualified FileConfig
 import qualified Path
 import Protolude
 import qualified Result
+import qualified ValidationError
+import qualified Validator
 
 type App m a = E.ExceptT Error.T m a
 
@@ -23,7 +26,8 @@ _run actions = do
   arguments <- lift $ Actions.getArguments actions
   fileConfig <- E.liftEither $ _parseArguments arguments
   records <- _loadBudgetRecords (Actions.read actions) fileConfig
-  lift $ Actions.print actions $ show records
+  let barf = Validator.validate records
+  lift $ Actions.print actions $ Data.Text.unlines (map ValidationError.toText barf)
 
 _parseArguments :: [Argument.T] -> Result.T FileConfig.T
 _parseArguments arguments = case _argumentToPath <$> arguments of

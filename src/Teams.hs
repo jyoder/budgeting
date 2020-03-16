@@ -1,4 +1,4 @@
-module Teams (T, make) where
+module Teams (T, make, Teams.toList) where
 
 import qualified Data.ByteString
 import qualified Data.Csv
@@ -12,6 +12,9 @@ newtype T = T [Team.T]
 
 make :: [Team.T] -> T
 make = T
+
+toList :: T -> [Team.T]
+toList (T teams) = teams
 
 instance Data.Csv.FromField T where
   parseField s = pure $ Teams.make $ toTeam <$> splitOnComma s

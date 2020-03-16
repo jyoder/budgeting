@@ -2,13 +2,13 @@ module PriorityRecord (T (..)) where
 
 import Data.Csv ((.:))
 import qualified Data.Csv
-import qualified Name
 import qualified Priority
 import Protolude
+import qualified Team
 
 data T
   = T
-      { name :: !Name.T,
+      { team :: !Team.T,
         priorityQ1 :: !Priority.T,
         priorityQ2 :: !Priority.T,
         priorityQ3 :: !Priority.T,

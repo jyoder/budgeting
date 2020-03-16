@@ -42,6 +42,7 @@ spec = do
       let (_, system') = StateActions.run (Application.run StateActions.make) system
       MockSystem.printed system' `shouldBe` ["error reading file"]
     it "prints an error when the salaries file is not found" $ do
+      let prioritiesData = "Name,Priority Q1,Priority Q2,Priority Q3,Priority Q4\nRams,Football,Soccer,Football,Ping Pong"
       let system =
             MockSystem.make
               (Argument.fromText <$> ["priorities.csv", "salaries.csv", "teammates.csv"])
@@ -49,6 +50,7 @@ spec = do
       let (_, system') = StateActions.run (Application.run StateActions.make) system
       MockSystem.printed system' `shouldBe` ["File not found: salaries.csv"]
     it "prints an error when the salaries file contains invalid data" $ do
+      let prioritiesData = "Name,Priority Q1,Priority Q2,Priority Q3,Priority Q4\nRams,Football,Soccer,Football,Ping Pong"
       let system =
             MockSystem.make
               (Argument.fromText <$> ["priorities.csv", "salaries.csv", "teammates.csv"])
@@ -58,6 +60,7 @@ spec = do
       let (_, system') = StateActions.run (Application.run StateActions.make) system
       MockSystem.printed system' `shouldBe` ["salaries.csv: parse error (not enough input) at \"\""]
     it "prints an error when there is an error reading the salaries file" $ do
+      let prioritiesData = "Name,Priority Q1,Priority Q2,Priority Q3,Priority Q4\nRams,Football,Soccer,Football,Ping Pong"
       let system =
             MockSystem.make
               (Argument.fromText <$> ["priorities.csv", "salaries.csv", "teammates.csv"])
@@ -67,6 +70,8 @@ spec = do
       let (_, system') = StateActions.run (Application.run StateActions.make) system
       MockSystem.printed system' `shouldBe` ["error reading file"]
     it "prints an error when the teammates file is not found" $ do
+      let prioritiesData = "Name,Priority Q1,Priority Q2,Priority Q3,Priority Q4\nRams,Football,Soccer,Football,Ping Pong"
+      let salariesData = "Bhc,Name,Salary Q1,Salary Q2,Salary Q3,Salary Q4\n123,Bob,100,110,120,120"
       let system =
             MockSystem.make
               (Argument.fromText <$> ["priorities.csv", "salaries.csv", "teammates.csv"])
@@ -76,6 +81,8 @@ spec = do
       let (_, system') = StateActions.run (Application.run StateActions.make) system
       MockSystem.printed system' `shouldBe` ["File not found: teammates.csv"]
     it "prints an error when the teammates file contains invalid data" $ do
+      let prioritiesData = "Name,Priority Q1,Priority Q2,Priority Q3,Priority Q4\nRams,Football,Soccer,Football,Ping Pong"
+      let salariesData = "Bhc,Name,Salary Q1,Salary Q2,Salary Q3,Salary Q4\n123,Bob,100,110,120,120"
       let system =
             MockSystem.make
               (Argument.fromText <$> ["priorities.csv", "salaries.csv", "teammates.csv"])
@@ -86,6 +93,8 @@ spec = do
       let (_, system') = StateActions.run (Application.run StateActions.make) system
       MockSystem.printed system' `shouldBe` ["teammates.csv: parse error (not enough input) at \"\""]
     it "prints an error when there is an error reading the teammates file" $ do
+      let prioritiesData = "Name,Priority Q1,Priority Q2,Priority Q3,Priority Q4\nRams,Football,Soccer,Football,Ping Pong"
+      let salariesData = "Bhc,Name,Salary Q1,Salary Q2,Salary Q3,Salary Q4\n123,Bob,100,110,120,120"
       let system =
             MockSystem.make
               (Argument.fromText <$> ["priorities.csv", "salaries.csv", "teammates.csv"])
@@ -95,7 +104,10 @@ spec = do
               ]
       let (_, system') = StateActions.run (Application.run StateActions.make) system
       MockSystem.printed system' `shouldBe` ["error reading file"]
-    it "prints the budget records loaded from files" $ do
+    it "prints an error when validations fail" $ do
+      let teammatesData = "Bhc,Name,Teams Q1,Teams Q2,Teams Q3,Teams Q4\n"
+      let prioritiesData = "Name,Priority Q1,Priority Q2,Priority Q3,Priority Q4\nRams,Football,Soccer,Football,Ping Pong"
+      let salariesData = "Bhc,Name,Salary Q1,Salary Q2,Salary Q3,Salary Q4\n123,Bob,100,110,120,120"
       let system =
             MockSystem.make
               (Argument.fromText <$> ["priorities.csv", "salaries.csv", "teammates.csv"])
@@ -104,13 +116,4 @@ spec = do
                 (Path.fromText "teammates.csv", Result.success teammatesData)
               ]
       let (_, system') = StateActions.run (Application.run StateActions.make) system
-      MockSystem.printed system' `shouldBe` ["T {priorityRecords = [T {name = \"Rams\", priorityQ1 = \"Football\", priorityQ2 = \"Soccer\", priorityQ3 = \"Football\", priorityQ4 = \"Ping Pong\"}], salaryRecords = [T {bhc = \"123\", name = \"Bob\", salaryQ1 = 100.0, salaryQ2 = 110.0, salaryQ3 = 120.0, salaryQ4 = 120.0}], teammateRecords = [T {bhc = \"123\", name = \"Bob\", teamsQ1 = \"Rams\", teamsQ2 = \"49ers\", teamsQ3 = \"Rams\", teamsQ4 = \"Rams\"}]}"]
-
-prioritiesData :: Text
-prioritiesData = "Name,Priority Q1,Priority Q2,Priority Q3,Priority Q4\nRams,Football,Soccer,Football,Ping Pong"
-
-salariesData :: Text
-salariesData = "Bhc,Name,Salary Q1,Salary Q2,Salary Q3,Salary Q4\n123,Bob,100,110,120,120"
-
-teammatesData :: Text
-teammatesData = "Bhc,Name,Teams Q1,Teams Q2,Teams Q3,Teams Q4\n123,Bob,Rams,49ers,Rams,Rams"
+      MockSystem.printed system' `shouldBe` ["BHCs found in salaries that are missing in teammates: \"123\"\nTeams found in priorities that are missing from teammates: \"Rams\"\n"]

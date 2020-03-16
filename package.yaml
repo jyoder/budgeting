@@ -26,6 +26,7 @@ dependencies:
 - cassava
 - bytestring
 - unordered-containers
+- containers
 - text
 - mtl
 
