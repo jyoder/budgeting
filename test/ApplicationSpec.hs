@@ -116,4 +116,4 @@ spec = do
                 (Path.fromText "teammates.csv", Result.success teammatesData)
               ]
       let (_, system') = StateActions.run (Application.run StateActions.make) system
-      MockSystem.printed system' `shouldBe` ["BHCs found in salaries that are missing in teammates: \"123\"\nTeams found in priorities that are missing from teammates: \"Rams\"\n"]
+      MockSystem.printed system' `shouldBe` ["Missing BHC \"123\" in teammates file, found on line 1 in salaries file\nMissing team \"Rams\" in teammates file, found on line 1 in priorities file\n"]

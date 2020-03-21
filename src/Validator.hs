@@ -1,9 +1,8 @@
 module Validator (validate) where
 
-import qualified Bhc
 import qualified BudgetRecords
+import qualified Data.List
 import qualified Data.Set as Set
-import qualified Data.Text
 import qualified PriorityRecord
 import Protolude
 import qualified SalaryRecord
@@ -19,95 +18,93 @@ validate
       BudgetRecords.salaryRecords,
       BudgetRecords.teammateRecords
     } =
-    catMaybes
-      [ teammatesMissingFromSalariesErrors teammateRecords salaryRecords,
-        salariesMissingFromTeammatesErrors salaryRecords teammateRecords,
-        teamsMissingFromPrioritiesErrors teammateRecords priorityRecords,
-        teamsMissingFromTeammatesErrors priorityRecords teammateRecords,
-        duplicateTeamsInPrioritiesErrors priorityRecords,
+    mconcat
+      [ duplicateTeamInPrioritiesErrors priorityRecords,
+        duplicateBhcsInSalariesErrors salaryRecords,
         duplicateBhcsInTeammatesErrors teammateRecords,
-        duplicateBhcsInSalariesErrors salaryRecords
+        missingTeamInPrioritiesErrors teammateRecords priorityRecords,
+        missingBhcInSalariesErrors teammateRecords salaryRecords,
+        missingBhcInTeammatesErrors salaryRecords teammateRecords,
+        missingTeamInTeammatesErrors priorityRecords teammateRecords
       ]
 
-teammatesMissingFromSalariesErrors :: [TeammateRecord.T] -> [SalaryRecord.T] -> Maybe ValidationError.T
-teammatesMissingFromSalariesErrors teammates salaries = do
-  if not $ null missingBhcs
-    then Just $ validationError "BHCs found in teammates that are missing in salaries" missingBhcs
-    else Nothing
+duplicateTeamInPrioritiesErrors :: [PriorityRecord.T] -> [ValidationError.T]
+duplicateTeamInPrioritiesErrors priorities =
+  map validationError duplicatePriorities
   where
-    missingBhcs = map (Bhc.toText . TeammateRecord.bhc) missingTeammates
+    validationError priority =
+      ValidationError.DuplicateTeamInPriorities (line priority) (PriorityRecord.team priority)
+    duplicatePriorities = Set.toList $ prioritiesWithDuplicateTeams prioritySet
+    prioritySet = Set.fromList priorities
+    line priority = lineNumber priority priorities
+
+duplicateBhcsInSalariesErrors :: [SalaryRecord.T] -> [ValidationError.T]
+duplicateBhcsInSalariesErrors salaries =
+  map validationError duplicateSalaries
+  where
+    validationError salary =
+      ValidationError.DuplicateBhcInSalaries (line salary) (SalaryRecord.bhc salary)
+    duplicateSalaries = Set.toList $ salariesWithDuplicateBhcs salarySet
+    salarySet = Set.fromList salaries
+    line salary = lineNumber salary salaries
+
+duplicateBhcsInTeammatesErrors :: [TeammateRecord.T] -> [ValidationError.T]
+duplicateBhcsInTeammatesErrors teammates =
+  map validationError duplicateTeammates
+  where
+    validationError teammate = ValidationError.DuplicateBhcInTeammates (line teammate) (TeammateRecord.bhc teammate)
+    duplicateTeammates = Set.toList $ teammatesWithDuplicateBhcs teammateSet
+    teammateSet = Set.fromList teammates
+    line teammate = lineNumber teammate teammates
+
+missingTeamInPrioritiesErrors :: [TeammateRecord.T] -> [PriorityRecord.T] -> [ValidationError.T]
+missingTeamInPrioritiesErrors teammates priorities = do
+  map validationError missingTeamsTeammates
+  where
+    validationError (team, teammate) = ValidationError.MissingTeamInPriorities (line teammate) team
+    missingTeamsTeammates = Set.toList $ joinTeamsTeammatesOnTeam missingTeamSet teammateSet
+    missingTeamSet = teamsMissingFromPriorities teammateSet prioritySet
+    prioritySet = Set.fromList priorities
+    teammateSet = Set.fromList teammates
+    line teammate = lineNumber teammate teammates
+
+missingBhcInSalariesErrors :: [TeammateRecord.T] -> [SalaryRecord.T] -> [ValidationError.T]
+missingBhcInSalariesErrors teammates salaries = do
+  map validationError missingTeammates
+  where
+    validationError teammate = ValidationError.MissingBhcInSalaries (line teammate) (bhc teammate)
     missingTeammates = Set.toList $ teammatesMissingFromSalaries teammateSet salarySet
     teammateSet = Set.fromList teammates
     salarySet = Set.fromList salaries
+    line teammate = lineNumber teammate teammates
+    bhc = TeammateRecord.bhc
 
-salariesMissingFromTeammatesErrors :: [SalaryRecord.T] -> [TeammateRecord.T] -> Maybe ValidationError.T
-salariesMissingFromTeammatesErrors salaries teammates = do
-  if not $ null missingBhcs
-    then Just $ validationError "BHCs found in salaries that are missing in teammates" missingBhcs
-    else Nothing
+missingBhcInTeammatesErrors :: [SalaryRecord.T] -> [TeammateRecord.T] -> [ValidationError.T]
+missingBhcInTeammatesErrors salaries teammates = do
+  map validationError missingSalaries
   where
-    missingBhcs = map (Bhc.toText . SalaryRecord.bhc) missingSalaries
+    validationError salary = ValidationError.MissingBhcInTeammates (line salary) (bhc salary)
     missingSalaries = Set.toList $ salariesMissingFromTeammates salarySet teammateSet
     salarySet = Set.fromList salaries
     teammateSet = Set.fromList teammates
+    line salary = lineNumber salary salaries
+    bhc = SalaryRecord.bhc
 
-teamsMissingFromPrioritiesErrors :: [TeammateRecord.T] -> [PriorityRecord.T] -> Maybe ValidationError.T
-teamsMissingFromPrioritiesErrors teammates priorities = do
-  if not $ null missingTeams
-    then Just $ validationError "Teams found in teammates that are missing from priorities" missingTeams
-    else Nothing
+missingTeamInTeammatesErrors :: [PriorityRecord.T] -> [TeammateRecord.T] -> [ValidationError.T]
+missingTeamInTeammatesErrors priorities teammates = do
+  map validationError missingTeamsPriorities
   where
-    missingTeams = map Team.toText missingTeamList
-    missingTeamList = Set.toList $ teamsMissingFromPriorities teammateSet prioritySet
-    teammateSet = Set.fromList teammates
+    validationError (team, teammate) = ValidationError.MissingTeamInTeammates (line teammate) team
+    missingTeamsPriorities = Set.toList $ joinTeamsPrioritiesOnTeam missingTeamSet prioritySet
+    missingTeamSet = teamsMissingFromTeammates prioritySet teammateSet
     prioritySet = Set.fromList priorities
-
-teamsMissingFromTeammatesErrors :: [PriorityRecord.T] -> [TeammateRecord.T] -> Maybe ValidationError.T
-teamsMissingFromTeammatesErrors priorities teammates = do
-  if not $ null missingTeams
-    then Just $ validationError "Teams found in priorities that are missing from teammates" missingTeams
-    else Nothing
-  where
-    missingTeams = map Team.toText missingTeamList
-    missingTeamList = Set.toList $ teamsMissingFromTeammates prioritySet teammateSet
     teammateSet = Set.fromList teammates
-    prioritySet = Set.fromList priorities
+    line priority = lineNumber priority priorities
 
-duplicateTeamsInPrioritiesErrors :: [PriorityRecord.T] -> Maybe ValidationError.T
-duplicateTeamsInPrioritiesErrors priorities = do
-  if not $ null duplicateTeams
-    then Just $ validationError "Duplicate teams found in priorities" duplicateTeams
-    else Nothing
+lineNumber :: Eq a => a -> [a] -> ValidationError.LineNumber
+lineNumber items item = ValidationError.LineNumber $ line items item
   where
-    duplicateTeams = map Team.toText duplicateTeamList
-    duplicateTeamList = Set.toList $ duplicateTeamsInPriorities prioritySet
-    prioritySet = Set.fromList priorities
-
-duplicateBhcsInTeammatesErrors :: [TeammateRecord.T] -> Maybe ValidationError.T
-duplicateBhcsInTeammatesErrors teammates = do
-  if not $ null duplicateBhcs
-    then Just $ validationError "Duplicate BHCs found in teammates" duplicateBhcs
-    else Nothing
-  where
-    duplicateBhcs = map Bhc.toText duplicateBhcsList
-    duplicateBhcsList = Set.toList $ duplicateBhcsInTeammates teammateSet
-    teammateSet = Set.fromList teammates
-
-duplicateBhcsInSalariesErrors :: [SalaryRecord.T] -> Maybe ValidationError.T
-duplicateBhcsInSalariesErrors salaries = do
-  if not $ null duplicateBhcs
-    then Just $ validationError "Duplicate BHCs found in salaries" duplicateBhcs
-    else Nothing
-  where
-    duplicateBhcs = map Bhc.toText duplicateBhcsList
-    duplicateBhcsList = Set.toList $ duplicateBhcsInSalaries salarySet
-    salarySet = Set.fromList salaries
-
-validationError :: Text -> [Text] -> ValidationError.T
-validationError message items =
-  ValidationError.make $ message <> ": " <> Data.Text.intercalate ", " quotedItems
-  where
-    quotedItems = map (\i -> "\"" <> i <> "\"") items
+    line is i = fromMaybe (-1) (Data.List.elemIndex is i) + 1
 
 teammatesMissingFromSalaries :: Set TeammateRecord.T -> Set SalaryRecord.T -> Set TeammateRecord.T
 teammatesMissingFromSalaries teammates salaries = do
@@ -128,15 +125,6 @@ teamsMissingFromPriorities teammates priorities =
 teamsMissingFromTeammates :: Set PriorityRecord.T -> Set TeammateRecord.T -> Set Team.T
 teamsMissingFromTeammates priorities teammates =
   Set.difference (teamsFromPriorities priorities) (teamsFromTeammates teammates)
-
-duplicateTeamsInPriorities :: Set PriorityRecord.T -> Set Team.T
-duplicateTeamsInPriorities priorities = Set.map PriorityRecord.team $ prioritiesWithDuplicateTeams priorities
-
-duplicateBhcsInTeammates :: Set TeammateRecord.T -> Set Bhc.T
-duplicateBhcsInTeammates teammates = Set.map TeammateRecord.bhc $ teammatesWithDuplicateBhcs teammates
-
-duplicateBhcsInSalaries :: Set SalaryRecord.T -> Set Bhc.T
-duplicateBhcsInSalaries salaries = Set.map SalaryRecord.bhc $ salariesWithDuplicateBhcs salaries
 
 prioritiesWithDuplicateTeams :: Set PriorityRecord.T -> Set PriorityRecord.T
 prioritiesWithDuplicateTeams priorities =
@@ -162,6 +150,24 @@ salariesWithDuplicateBhcs salaries =
 teamsFromTeammates :: Set TeammateRecord.T -> Set Team.T
 teamsFromTeammates teammates = Set.unions $ Set.map teamsFromTeammate teammates
 
+joinSalariesTeammatesOnBhc :: Set SalaryRecord.T -> Set TeammateRecord.T -> Set (SalaryRecord.T, TeammateRecord.T)
+joinSalariesTeammatesOnBhc salaries teammates =
+  Set.filter
+    (\(salary, teammate) -> SalaryRecord.bhc salary == TeammateRecord.bhc teammate)
+    (Set.cartesianProduct salaries teammates)
+
+joinTeamsTeammatesOnTeam :: Set Team.T -> Set TeammateRecord.T -> Set (Team.T, TeammateRecord.T)
+joinTeamsTeammatesOnTeam teams teammates =
+  Set.filter
+    (\(team, teammate) -> team `elem` teamsFromTeammate teammate)
+    (Set.cartesianProduct teams teammates)
+
+joinTeamsPrioritiesOnTeam :: Set Team.T -> Set PriorityRecord.T -> Set (Team.T, PriorityRecord.T)
+joinTeamsPrioritiesOnTeam teams priorities =
+  Set.filter
+    (\(team, priority) -> team == PriorityRecord.team priority)
+    (Set.cartesianProduct teams priorities)
+
 teamsFromTeammate :: TeammateRecord.T -> Set Team.T
 teamsFromTeammate
   TeammateRecord.T
@@ -175,9 +181,3 @@ teamsFromTeammate
 
 teamsFromPriorities :: Set PriorityRecord.T -> Set Team.T
 teamsFromPriorities = Set.map PriorityRecord.team
-
-joinSalariesTeammatesOnBhc :: Set SalaryRecord.T -> Set TeammateRecord.T -> Set (SalaryRecord.T, TeammateRecord.T)
-joinSalariesTeammatesOnBhc salaries teammates =
-  Set.filter
-    (\(s, t) -> SalaryRecord.bhc s == TeammateRecord.bhc t)
-    (Set.cartesianProduct salaries teammates)
