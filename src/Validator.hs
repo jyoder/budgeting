@@ -1,8 +1,11 @@
 module Validator (validate) where
 
+import qualified Bhc
 import qualified BudgetRecords
+import qualified Data.Char
 import qualified Data.List
 import qualified Data.Set as Set
+import qualified Data.Text
 import qualified PriorityRecord
 import Protolude
 import qualified SalaryRecord
@@ -18,8 +21,10 @@ validate
       BudgetRecords.salaryRecords,
       BudgetRecords.teammateRecords
     } =
-    mconcat
-      [ duplicateTeamInPrioritiesErrors priorityRecords,
+    concat
+      [ blankSalaryBhcErrors salaryRecords,
+        blankTeammateBhcErrors teammateRecords,
+        duplicateTeamInPrioritiesErrors priorityRecords,
         duplicateBhcsInSalariesErrors salaryRecords,
         duplicateBhcsInTeammatesErrors teammateRecords,
         missingTeamInPrioritiesErrors teammateRecords priorityRecords,
@@ -27,6 +32,20 @@ validate
         missingBhcInTeammatesErrors salaryRecords teammateRecords,
         missingTeamInTeammatesErrors priorityRecords teammateRecords
       ]
+
+blankSalaryBhcErrors :: [SalaryRecord.T] -> [ValidationError.T]
+blankSalaryBhcErrors salaries = map validationError blankSalaries
+  where
+    validationError salary = ValidationError.BlankSalaryBhcError (line salary)
+    blankSalaries = filter (isBlank . Bhc.toText . SalaryRecord.bhc) salaries
+    line salary = lineNumber salary salaries
+
+blankTeammateBhcErrors :: [TeammateRecord.T] -> [ValidationError.T]
+blankTeammateBhcErrors teammates = map validationError blankTeammates
+  where
+    validationError teammate = ValidationError.BlankTeammateBhcError (line teammate)
+    blankTeammates = filter (isBlank . Bhc.toText . TeammateRecord.bhc) teammates
+    line teammate = lineNumber teammate teammates
 
 duplicateTeamInPrioritiesErrors :: [PriorityRecord.T] -> [ValidationError.T]
 duplicateTeamInPrioritiesErrors priorities =
@@ -100,11 +119,6 @@ missingTeamInTeammatesErrors priorities teammates = do
     prioritySet = Set.fromList priorities
     teammateSet = Set.fromList teammates
     line priority = lineNumber priority priorities
-
-lineNumber :: Eq a => a -> [a] -> ValidationError.LineNumber
-lineNumber items item = ValidationError.LineNumber $ line items item
-  where
-    line is i = fromMaybe (-1) (Data.List.elemIndex is i) + 1
 
 teammatesMissingFromSalaries :: Set TeammateRecord.T -> Set SalaryRecord.T -> Set TeammateRecord.T
 teammatesMissingFromSalaries teammates salaries = do
@@ -181,3 +195,11 @@ teamsFromTeammate
 
 teamsFromPriorities :: Set PriorityRecord.T -> Set Team.T
 teamsFromPriorities = Set.map PriorityRecord.team
+
+isBlank :: Text -> Bool
+isBlank = Data.Text.foldl (\b c -> b && Data.Char.isSpace c) True
+
+lineNumber :: Eq a => a -> [a] -> ValidationError.LineNumber
+lineNumber items item = ValidationError.LineNumber $ line items item
+  where
+    line is i = fromMaybe (-1) (Data.List.elemIndex is i) + 1

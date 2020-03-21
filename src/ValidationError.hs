@@ -5,7 +5,9 @@ import Protolude
 import qualified Team
 
 data T
-  = DuplicateTeamInPriorities LineNumber Team.T
+  = BlankSalaryBhcError LineNumber
+  | BlankTeammateBhcError LineNumber
+  | DuplicateTeamInPriorities LineNumber Team.T
   | DuplicateBhcInSalaries LineNumber Bhc.T
   | DuplicateBhcInTeammates LineNumber Bhc.T
   | MissingTeamInPriorities LineNumber Team.T
@@ -16,6 +18,10 @@ data T
 newtype LineNumber = LineNumber Int deriving newtype (Num)
 
 toText :: T -> Text
+toText (BlankSalaryBhcError (LineNumber line)) =
+  "Blank BHC found on line " <> show line <> " in salary file"
+toText (BlankTeammateBhcError (LineNumber line)) =
+  "Blank BHC found on line " <> show line <> " in teammates file"
 toText (DuplicateTeamInPriorities (LineNumber line) team) =
   "Duplicate team \"" <> Team.toText team <> "\" found on line " <> show line <> " in priorities file"
 toText (DuplicateBhcInSalaries (LineNumber line) bhc) =
