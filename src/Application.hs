@@ -9,6 +9,7 @@ import qualified Data.Text
 import qualified Error
 import qualified FileConfig
 import qualified Path
+import qualified Preprocessor
 import Protolude
 import qualified Result
 import qualified ValidationError
@@ -18,36 +19,36 @@ type App m a = E.ExceptT Error.T m a
 
 run :: Monad m => Actions.T m -> m ()
 run actions = do
-  result <- runExceptT (_run actions)
+  result <- runExceptT (run' actions)
   either (Actions.print actions . Error.toText) return result
 
-_run :: Monad m => Actions.T m -> App m ()
-_run actions = do
+run' :: Monad m => Actions.T m -> App m ()
+run' actions = do
   arguments <- lift $ Actions.getArguments actions
-  fileConfig <- E.liftEither $ _parseArguments arguments
-  records <- _loadBudgetRecords (Actions.read actions) fileConfig
-  let barf = Validator.validate records
-  lift $ Actions.print actions $ Data.Text.unlines (map ValidationError.toText barf)
+  fileConfig <- E.liftEither $ parseArguments arguments
+  records <- loadBudgetRecords (Actions.read actions) fileConfig
+  let validated = Validator.validate $ Preprocessor.preprocess records
+  lift $ Actions.print actions $ Data.Text.unlines (map ValidationError.toText validated)
 
-_parseArguments :: [Argument.T] -> Result.T FileConfig.T
-_parseArguments arguments = case _argumentToPath <$> arguments of
+parseArguments :: [Argument.T] -> Result.T FileConfig.T
+parseArguments arguments = case argumentToPath <$> arguments of
   [priorityPath, salaryPath, teammatePath] ->
     Result.success $ FileConfig.T priorityPath salaryPath teammatePath
   _ ->
     Result.error "Usage: ./budgeting-exe <priorities-csv> <salaries-csv> <teammates-csv>"
 
-_argumentToPath :: Argument.T -> Path.T
-_argumentToPath = Path.fromText . Argument.toText
+argumentToPath :: Argument.T -> Path.T
+argumentToPath = Path.fromText . Argument.toText
 
-_loadBudgetRecords :: Monad m => (Path.T -> App m Text) -> FileConfig.T -> App m BudgetRecords.T
-_loadBudgetRecords read FileConfig.T {FileConfig.prioritiesFile, FileConfig.salariesFile, FileConfig.teammatesFile} = do
-  priorityRecords <- _loadRecords read prioritiesFile
-  salaryRecords <- _loadRecords read salariesFile
-  teammateRecords <- _loadRecords read teammatesFile
+loadBudgetRecords :: Monad m => (Path.T -> App m Text) -> FileConfig.T -> App m BudgetRecords.T
+loadBudgetRecords read FileConfig.T {FileConfig.prioritiesFile, FileConfig.salariesFile, FileConfig.teammatesFile} = do
+  priorityRecords <- loadRecords read prioritiesFile
+  salaryRecords <- loadRecords read salariesFile
+  teammateRecords <- loadRecords read teammatesFile
   return $ BudgetRecords.T priorityRecords salaryRecords teammateRecords
 
-_loadRecords :: Monad m => Csv.FromNamedRecord f => (Path.T -> App m Text) -> Path.T -> App m [f]
-_loadRecords read filePath = do
+loadRecords :: Monad m => Csv.FromNamedRecord f => (Path.T -> App m Text) -> Path.T -> App m [f]
+loadRecords read filePath = do
   csvData <- read filePath
   E.liftEither $ either prependPath Result.success (Csv.decode csvData)
   where

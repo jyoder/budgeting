@@ -14,28 +14,28 @@ import Protolude
 import qualified Result
 
 make :: Actions.T IO
-make = Actions.T _getArguments _read _print
+make = Actions.T getArguments read IoActions.print
 
-_getArguments :: IO [Argument.T]
-_getArguments = do
+getArguments :: IO [Argument.T]
+getArguments = do
   args <- getArgs
   return $ Argument.fromText . Data.Text.pack <$> args
 
-_read :: Path.T -> Except.ExceptT Error.T IO Text
-_read = ExceptT . _read'
+read :: Path.T -> Except.ExceptT Error.T IO Text
+read = ExceptT . read'
 
-_read' :: Path.T -> IO (Result.T Text)
-_read' path = do
+read' :: Path.T -> IO (Result.T Text)
+read' path = do
   fileData <- try $ ByteString.readFile filePath :: IO (Either IOException ByteString.ByteString)
-  return $ either (Result.error . show) (Result.success . _decode) fileData
+  return $ either (Result.error . show) (Result.success . decode) fileData
   where
     filePath = Path.toFilePath path
 
-_decode :: ByteString.ByteString -> Text
-_decode =
+decode :: ByteString.ByteString -> Text
+decode =
   Encoding.decodeUtf8With Error.lenientDecode
     . ByteString.toStrict
     . FileFormat.dropByteOrderMark
 
-_print :: Text -> IO ()
-_print = putStrLn
+print :: Text -> IO ()
+print = putStrLn

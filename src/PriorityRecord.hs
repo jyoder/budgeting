@@ -2,13 +2,15 @@ module PriorityRecord (T (..)) where
 
 import Data.Csv ((.:))
 import qualified Data.Csv
+import qualified LineNumber
 import qualified Priority
 import Protolude
 import qualified Team
 
 data T
   = T
-      { team :: !Team.T,
+      { lineNumber :: !LineNumber.T,
+        team :: !Team.T,
         priorityQ1 :: !Priority.T,
         priorityQ2 :: !Priority.T,
         priorityQ3 :: !Priority.T,
@@ -19,7 +21,8 @@ data T
 instance Data.Csv.FromNamedRecord T where
   parseNamedRecord m =
     T
-      <$> m .: "Name"
+      <$> pure 0
+      <*> m .: "Name"
       <*> m .: "Priority Q1"
       <*> m .: "Priority Q2"
       <*> m .: "Priority Q3"

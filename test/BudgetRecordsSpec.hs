@@ -13,10 +13,10 @@ spec = do
   describe "accessors" $ do
     it "provides access to the fields in the record" $ do
       let (priority, salary, teams, teammate, record) =
-            ( PriorityRecord.T "Team" "P1" "P2" "P3" "P4",
-              SalaryRecord.T "Bhc" "Name" 1 2 3 4,
+            ( PriorityRecord.T 1 "Team" "P1" "P2" "P3" "P4",
+              SalaryRecord.T 1 "Bhc" "Name" 1 2 3 4,
               Teams.make ["T1", "T2"],
-              TeammateRecord.T "Bhc" "Name" teams teams teams teams,
+              TeammateRecord.T 1 "Bhc" "Name" "Sports" teams teams teams teams,
               BudgetRecords.T [priority] [salary] [teammate]
             )
       BudgetRecords.priorityRecords record `shouldBe` [priority]

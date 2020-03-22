@@ -12,7 +12,7 @@ spec = do
   describe "accessors" $ do
     it "provides access to fields in the record" $ do
       let (sQ1, sQ2, sQ3, sQ4) = (Salary.make 100000.12, Salary.make 110000.00, Salary.make 110001.10, Salary.make 110000.00)
-      let record = SalaryRecord.T "123" "Bob Bobberson" sQ1 sQ2 sQ3 sQ4
+      let record = SalaryRecord.T 1 "123" "Bob Bobberson" sQ1 sQ2 sQ3 sQ4
       SalaryRecord.bhc record `shouldBe` "123"
       SalaryRecord.name record `shouldBe` "Bob Bobberson"
       SalaryRecord.salaryQ1 record `shouldBe` sQ1
@@ -25,5 +25,5 @@ spec = do
       Data.Csv.decodeByName "Bhc,Name,Salary Q1,Salary Q2,Salary Q3,Salary Q4\n123,Bob Bobberson,100000.12,110000.00,110001.10,110000"
         `shouldBe` Right
           ( Data.Vector.fromList ["Bhc", "Name", "Salary Q1", "Salary Q2", "Salary Q3", "Salary Q4"],
-            Data.Vector.fromList [SalaryRecord.T "123" "Bob Bobberson" sQ1 sQ2 sQ3 sQ4]
+            Data.Vector.fromList [SalaryRecord.T 0 "123" "Bob Bobberson" sQ1 sQ2 sQ3 sQ4]
           )

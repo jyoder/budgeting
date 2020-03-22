@@ -12,7 +12,7 @@ spec = do
   describe "accessors" $ do
     it "provides access to fields in the record" $ do
       let (rams, raiders, dolphins) = (Teams.make ["Rams"], Teams.make ["Raiders"], Teams.make ["Dolphins"])
-      let record = TeammateRecord.T "123" "Bob Bobberson" rams raiders dolphins rams
+      let record = TeammateRecord.T 1 "123" "Bob Bobberson" "Sports" rams raiders dolphins rams
       TeammateRecord.bhc record `shouldBe` "123"
       TeammateRecord.name record `shouldBe` "Bob Bobberson"
       TeammateRecord.teamsQ1 record `shouldBe` rams
@@ -22,8 +22,8 @@ spec = do
   describe "decodeByName" $ do
     it "returns a TeammateRecord when all columns are present" $ do
       let (rams, raiders, dolphins) = (Teams.make ["Rams"], Teams.make ["Raiders"], Teams.make ["Dolphins"])
-      decodeByName "Bhc,Name,Teams Q1,Teams Q2,Teams Q3,Teams Q4\n123,Bob Bobberson,Rams,Raiders,Dolphins,Rams"
+      decodeByName "Bhc,Name,Department,Teams Q1,Teams Q2,Teams Q3,Teams Q4\n123,Bob Bobberson,Sports,Rams,Raiders,Dolphins,Rams"
         `shouldBe` Right
-          ( fromList ["Bhc", "Name", "Teams Q1", "Teams Q2", "Teams Q3", "Teams Q4"],
-            fromList [TeammateRecord.T "123" "Bob Bobberson" rams raiders dolphins rams]
+          ( fromList ["Bhc", "Name", "Department", "Teams Q1", "Teams Q2", "Teams Q3", "Teams Q4"],
+            fromList [TeammateRecord.T 0 "123" "Bob Bobberson" "Sports" rams raiders dolphins rams]
           )

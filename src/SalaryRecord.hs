@@ -3,13 +3,15 @@ module SalaryRecord (T (..)) where
 import qualified Bhc
 import Data.Csv ((.:))
 import qualified Data.Csv
+import qualified LineNumber
 import qualified Name
 import Protolude
 import qualified Salary
 
 data T
   = T
-      { bhc :: !Bhc.T,
+      { lineNumber :: !LineNumber.T,
+        bhc :: !Bhc.T,
         name :: !Name.T,
         salaryQ1 :: !Salary.T,
         salaryQ2 :: !Salary.T,
@@ -21,7 +23,8 @@ data T
 instance Data.Csv.FromNamedRecord T where
   parseNamedRecord m =
     T
-      <$> m .: "Bhc"
+      <$> pure 0
+      <*> m .: "Bhc"
       <*> m .: "Name"
       <*> m .: "Salary Q1"
       <*> m .: "Salary Q2"

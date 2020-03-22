@@ -1,38 +1,37 @@
-module ValidationError (T (..), LineNumber (..), toText) where
+module ValidationError (T (..), toText) where
 
 import qualified Bhc
+import qualified LineNumber
 import Protolude
 import qualified Team
 
 data T
-  = BlankSalaryBhcError LineNumber
-  | BlankTeammateBhcError LineNumber
-  | DuplicateTeamInPriorities LineNumber Team.T
-  | DuplicateBhcInSalaries LineNumber Bhc.T
-  | DuplicateBhcInTeammates LineNumber Bhc.T
-  | MissingTeamInPriorities LineNumber Team.T
-  | MissingBhcInSalaries LineNumber Bhc.T
-  | MissingBhcInTeammates LineNumber Bhc.T
-  | MissingTeamInTeammates LineNumber Team.T
-
-newtype LineNumber = LineNumber Int deriving newtype (Num)
+  = BlankSalaryBhcError LineNumber.T
+  | BlankTeammateBhcError LineNumber.T
+  | DuplicateTeamInPriorities LineNumber.T Team.T
+  | DuplicateBhcInSalaries LineNumber.T Bhc.T
+  | DuplicateBhcInTeammates LineNumber.T Bhc.T
+  | MissingTeamInPriorities LineNumber.T Team.T
+  | MissingBhcInSalaries LineNumber.T Bhc.T
+  | MissingBhcInTeammates LineNumber.T Bhc.T
+  | MissingTeamInTeammates LineNumber.T Team.T
 
 toText :: T -> Text
-toText (BlankSalaryBhcError (LineNumber line)) =
-  "Blank BHC found on line " <> show line <> " in salary file"
-toText (BlankTeammateBhcError (LineNumber line)) =
-  "Blank BHC found on line " <> show line <> " in teammates file"
-toText (DuplicateTeamInPriorities (LineNumber line) team) =
-  "Duplicate team \"" <> Team.toText team <> "\" found on line " <> show line <> " in priorities file"
-toText (DuplicateBhcInSalaries (LineNumber line) bhc) =
-  "Duplicate BHC \"" <> Bhc.toText bhc <> "\" found on line " <> show line <> " in salaries file"
-toText (DuplicateBhcInTeammates (LineNumber line) bhc) =
-  "Duplicate BHC \"" <> Bhc.toText bhc <> "\" found on line " <> show line <> " in teammates file"
-toText (MissingTeamInPriorities (LineNumber line) team) =
-  "Missing team \"" <> Team.toText team <> "\" in priorities file, found on line " <> show line <> " in teammates file"
-toText (MissingBhcInSalaries (LineNumber line) bhc) =
-  "Missing BHC \"" <> Bhc.toText bhc <> "\" in salaries file, found on line " <> show line <> " in teammates file"
-toText (MissingBhcInTeammates (LineNumber line) bhc) =
-  "Missing BHC \"" <> Bhc.toText bhc <> "\" in teammates file, found on line " <> show line <> " in salaries file"
-toText (MissingTeamInTeammates (LineNumber line) team) =
-  "Missing team \"" <> Team.toText team <> "\" in teammates file, found on line " <> show line <> " in priorities file"
+toText (BlankSalaryBhcError lineNumber) =
+  "Blank BHC found on line " <> LineNumber.toText lineNumber <> " in salary file"
+toText (BlankTeammateBhcError lineNumber) =
+  "Blank BHC found on line " <> LineNumber.toText lineNumber <> " in teammates file"
+toText (DuplicateTeamInPriorities lineNumber team) =
+  "Duplicate team \"" <> Team.toText team <> "\" found on line " <> LineNumber.toText lineNumber <> " in priorities file"
+toText (DuplicateBhcInSalaries lineNumber bhc) =
+  "Duplicate BHC \"" <> Bhc.toText bhc <> "\" found on line " <> LineNumber.toText lineNumber <> " in salaries file"
+toText (DuplicateBhcInTeammates lineNumber bhc) =
+  "Duplicate BHC \"" <> Bhc.toText bhc <> "\" found on line " <> LineNumber.toText lineNumber <> " in teammates file"
+toText (MissingTeamInPriorities lineNumber team) =
+  "Missing team \"" <> Team.toText team <> "\" in priorities file, found on line " <> LineNumber.toText lineNumber <> " in teammates file"
+toText (MissingBhcInSalaries lineNumber bhc) =
+  "Missing BHC \"" <> Bhc.toText bhc <> "\" in salaries file, found on line " <> LineNumber.toText lineNumber <> " in teammates file"
+toText (MissingBhcInTeammates lineNumber bhc) =
+  "Missing BHC \"" <> Bhc.toText bhc <> "\" in teammates file, found on line " <> LineNumber.toText lineNumber <> " in salaries file"
+toText (MissingTeamInTeammates lineNumber team) =
+  "Missing team \"" <> Team.toText team <> "\" in teammates file, found on line " <> LineNumber.toText lineNumber <> " in priorities file"

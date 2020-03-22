@@ -10,7 +10,7 @@ spec :: Spec
 spec = do
   describe "accessors" $ do
     it "provides access to the fields in the record" $ do
-      let record = PriorityRecord.T "49ers" "Football" "Soccer" "Hockey" "Foosball"
+      let record = PriorityRecord.T 0 "49ers" "Football" "Soccer" "Hockey" "Foosball"
       PriorityRecord.team record `shouldBe` "49ers"
       PriorityRecord.priorityQ1 record `shouldBe` "Football"
       PriorityRecord.priorityQ2 record `shouldBe` "Soccer"
@@ -22,5 +22,5 @@ spec = do
         decodeByName "Name,Priority Q1,Priority Q2,Priority Q3,Priority Q4\n49ers,Football,Soccer,Hockey,Foosball"
         `shouldBe` Right
           ( fromList ["Name", "Priority Q1", "Priority Q2", "Priority Q3", "Priority Q4"],
-            fromList [PriorityRecord.T "49ers" "Football" "Soccer" "Hockey" "Foosball"]
+            fromList [PriorityRecord.T 0 "49ers" "Football" "Soccer" "Hockey" "Foosball"]
           )

@@ -8,8 +8,8 @@ import Protolude
 import qualified Result
 
 decode :: Data.Csv.FromNamedRecord f => Text -> Result.T [f]
-decode text = case Data.Csv.decodeByName $ _toLazyByteString text of
+decode text = case Data.Csv.decodeByName $ toLazyByteString text of
   Left errorMessage -> Result.error $ Data.Text.pack errorMessage
   Right records -> Result.success $ toList $ snd records
   where
-    _toLazyByteString = Data.ByteString.Lazy.fromStrict . Data.Text.Encoding.encodeUtf8
+    toLazyByteString = Data.ByteString.Lazy.fromStrict . Data.Text.Encoding.encodeUtf8

@@ -3,7 +3,6 @@ module Validator (validate) where
 import qualified Bhc
 import qualified BudgetRecords
 import qualified Data.Char
-import qualified Data.List
 import qualified Data.Set as Set
 import qualified Data.Text
 import qualified PriorityRecord
@@ -38,14 +37,14 @@ blankSalaryBhcErrors salaries = map validationError blankSalaries
   where
     validationError salary = ValidationError.BlankSalaryBhcError (line salary)
     blankSalaries = filter (isBlank . Bhc.toText . SalaryRecord.bhc) salaries
-    line salary = lineNumber salary salaries
+    line = SalaryRecord.lineNumber
 
 blankTeammateBhcErrors :: [TeammateRecord.T] -> [ValidationError.T]
 blankTeammateBhcErrors teammates = map validationError blankTeammates
   where
     validationError teammate = ValidationError.BlankTeammateBhcError (line teammate)
     blankTeammates = filter (isBlank . Bhc.toText . TeammateRecord.bhc) teammates
-    line teammate = lineNumber teammate teammates
+    line = TeammateRecord.lineNumber
 
 duplicateTeamInPrioritiesErrors :: [PriorityRecord.T] -> [ValidationError.T]
 duplicateTeamInPrioritiesErrors priorities =
@@ -55,7 +54,7 @@ duplicateTeamInPrioritiesErrors priorities =
       ValidationError.DuplicateTeamInPriorities (line priority) (PriorityRecord.team priority)
     duplicatePriorities = Set.toList $ prioritiesWithDuplicateTeams prioritySet
     prioritySet = Set.fromList priorities
-    line priority = lineNumber priority priorities
+    line = PriorityRecord.lineNumber
 
 duplicateBhcsInSalariesErrors :: [SalaryRecord.T] -> [ValidationError.T]
 duplicateBhcsInSalariesErrors salaries =
@@ -65,7 +64,7 @@ duplicateBhcsInSalariesErrors salaries =
       ValidationError.DuplicateBhcInSalaries (line salary) (SalaryRecord.bhc salary)
     duplicateSalaries = Set.toList $ salariesWithDuplicateBhcs salarySet
     salarySet = Set.fromList salaries
-    line salary = lineNumber salary salaries
+    line = SalaryRecord.lineNumber
 
 duplicateBhcsInTeammatesErrors :: [TeammateRecord.T] -> [ValidationError.T]
 duplicateBhcsInTeammatesErrors teammates =
@@ -74,7 +73,7 @@ duplicateBhcsInTeammatesErrors teammates =
     validationError teammate = ValidationError.DuplicateBhcInTeammates (line teammate) (TeammateRecord.bhc teammate)
     duplicateTeammates = Set.toList $ teammatesWithDuplicateBhcs teammateSet
     teammateSet = Set.fromList teammates
-    line teammate = lineNumber teammate teammates
+    line = TeammateRecord.lineNumber
 
 missingTeamInPrioritiesErrors :: [TeammateRecord.T] -> [PriorityRecord.T] -> [ValidationError.T]
 missingTeamInPrioritiesErrors teammates priorities = do
@@ -85,7 +84,7 @@ missingTeamInPrioritiesErrors teammates priorities = do
     missingTeamSet = teamsMissingFromPriorities teammateSet prioritySet
     prioritySet = Set.fromList priorities
     teammateSet = Set.fromList teammates
-    line teammate = lineNumber teammate teammates
+    line = TeammateRecord.lineNumber
 
 missingBhcInSalariesErrors :: [TeammateRecord.T] -> [SalaryRecord.T] -> [ValidationError.T]
 missingBhcInSalariesErrors teammates salaries = do
@@ -95,7 +94,7 @@ missingBhcInSalariesErrors teammates salaries = do
     missingTeammates = Set.toList $ teammatesMissingFromSalaries teammateSet salarySet
     teammateSet = Set.fromList teammates
     salarySet = Set.fromList salaries
-    line teammate = lineNumber teammate teammates
+    line = TeammateRecord.lineNumber
     bhc = TeammateRecord.bhc
 
 missingBhcInTeammatesErrors :: [SalaryRecord.T] -> [TeammateRecord.T] -> [ValidationError.T]
@@ -106,19 +105,19 @@ missingBhcInTeammatesErrors salaries teammates = do
     missingSalaries = Set.toList $ salariesMissingFromTeammates salarySet teammateSet
     salarySet = Set.fromList salaries
     teammateSet = Set.fromList teammates
-    line salary = lineNumber salary salaries
+    line = SalaryRecord.lineNumber
     bhc = SalaryRecord.bhc
 
 missingTeamInTeammatesErrors :: [PriorityRecord.T] -> [TeammateRecord.T] -> [ValidationError.T]
 missingTeamInTeammatesErrors priorities teammates = do
   map validationError missingTeamsPriorities
   where
-    validationError (team, teammate) = ValidationError.MissingTeamInTeammates (line teammate) team
+    validationError (team, priority) = ValidationError.MissingTeamInTeammates (line priority) team
     missingTeamsPriorities = Set.toList $ joinTeamsPrioritiesOnTeam missingTeamSet prioritySet
     missingTeamSet = teamsMissingFromTeammates prioritySet teammateSet
     prioritySet = Set.fromList priorities
     teammateSet = Set.fromList teammates
-    line priority = lineNumber priority priorities
+    line = PriorityRecord.lineNumber
 
 teammatesMissingFromSalaries :: Set TeammateRecord.T -> Set SalaryRecord.T -> Set TeammateRecord.T
 teammatesMissingFromSalaries teammates salaries = do
@@ -198,8 +197,3 @@ teamsFromPriorities = Set.map PriorityRecord.team
 
 isBlank :: Text -> Bool
 isBlank = Data.Text.foldl (\b c -> b && Data.Char.isSpace c) True
-
-lineNumber :: Eq a => a -> [a] -> ValidationError.LineNumber
-lineNumber items item = ValidationError.LineNumber $ line items item
-  where
-    line is i = fromMaybe (-1) (Data.List.elemIndex is i) + 1
