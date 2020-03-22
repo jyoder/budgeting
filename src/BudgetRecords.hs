@@ -11,4 +11,4 @@ data T
         salaryRecords :: [SalaryRecord.T],
         teammateRecords :: [TeammateRecord.T]
       }
-  deriving (Show)
+  deriving (Show, Eq)
