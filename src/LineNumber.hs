@@ -1,16 +1,13 @@
-module LineNumber (T, fromInt, toInt, toText) where
+module LineNumber (T, next, toText) where
 
 import Protolude
 
-newtype T = T Int
+newtype T = T Integer
   deriving (Show, Eq, Ord)
   deriving newtype (Num)
 
-fromInt :: Int -> T
-fromInt = T
-
-toInt :: T -> Int
-toInt (T lineNumber) = lineNumber
+next :: T -> T
+next (T number) = T number + 1
 
 toText :: T -> Text
-toText (T lineNumber) = show lineNumber
+toText (T number) = show number
