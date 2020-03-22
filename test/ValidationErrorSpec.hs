@@ -34,3 +34,9 @@ spec = do
     it "converts MissingTeamInTeammates to text" $ do
       ValidationError.toText (ValidationError.MissingTeamInTeammates 1 "49ers")
         `shouldBe` "Missing team \"49ers\" in teammates file, found on line 1 in priorities file"
+  describe "show" $ do
+    it "converts a validation error to text" $ do
+      show (ValidationError.BlankSalaryBhcError 1) `shouldBe` ("BlankSalaryBhcError (T 1)" :: Text)
+  describe "Eq" $ do
+    it "tests whether two validation errors are equal" $ do
+      ValidationError.BlankSalaryBhcError 1 `shouldNotBe` ValidationError.BlankSalaryBhcError 2

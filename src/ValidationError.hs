@@ -15,6 +15,7 @@ data T
   | MissingBhcInSalaries LineNumber.T Bhc.T
   | MissingBhcInTeammates LineNumber.T Bhc.T
   | MissingTeamInTeammates LineNumber.T Team.T
+  deriving (Show, Eq)
 
 toText :: T -> Text
 toText (BlankSalaryBhcError lineNumber) =
