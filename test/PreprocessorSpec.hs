@@ -46,3 +46,25 @@ spec = do
           [ TeammateRecord.T 1 "Bob" "123" "Sports" rams rams rams rams,
             TeammateRecord.T 2 "Rob" "124" "Sports" rams rams rams rams
           ]
+    it "removes teammates who are in the \"Web Operations\" department" $ do
+      let rams = Teams.make ["Rams"]
+      let teammate1 = TeammateRecord.T 0 "Bob" "123" "Web Operations" rams rams rams rams
+      let teammate2 = TeammateRecord.T (-1) "Rob" "124" "Sports" rams rams rams rams
+      let records = BudgetRecords.T [] [] [teammate1, teammate2]
+      Preprocessor.preprocess records
+        `shouldBe` BudgetRecords.T
+          []
+          []
+          [ TeammateRecord.T 2 "Rob" "124" "Sports" rams rams rams rams
+          ]
+    it "removes teammates who are in the \"Web Operations\" department" $ do
+      let rams = Teams.make ["Rams"]
+      let teammate1 = TeammateRecord.T 0 "Bob" "123" "Security" rams rams rams rams
+      let teammate2 = TeammateRecord.T (-1) "Rob" "124" "Sports" rams rams rams rams
+      let records = BudgetRecords.T [] [] [teammate1, teammate2]
+      Preprocessor.preprocess records
+        `shouldBe` BudgetRecords.T
+          []
+          []
+          [ TeammateRecord.T 2 "Rob" "124" "Sports" rams rams rams rams
+          ]
