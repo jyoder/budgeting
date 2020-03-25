@@ -22,18 +22,13 @@ makeSpend :: [RecordTuple] -> BudgetReport.Spend
 makeSpend [] = BudgetReport.Spend "Undefined" 0.00
 makeSpend (r : rs) = BudgetReport.Spend priority spendQ1
   where
-    spendQ1 = sumSalaries $ salariesQ1 $ salaryRecords $ r : rs
+    spendQ1 = sum $ adjustedSalariesQ1 $ r : rs
     priority = PriorityRecord.priorityQ1 (fst3 r)
+    adjustedSalariesQ1 = map adjustedSalaryQ1
+    adjustedSalaryQ1 (_, salary, teammate) = salaryQ1 salary / teamCount teammate
+    salaryQ1 = Salary.toDouble . SalaryRecord.salaryQ1
+    teamCount = fromIntegral . length . Teams.toList . TeammateRecord.teamsQ1
     fst3 (p, _, _) = p
-
-salaryRecords :: [RecordTuple] -> [SalaryRecord.T]
-salaryRecords = map (\(_, salary, _) -> salary)
-
-sumSalaries :: [Salary.T] -> Double
-sumSalaries = Salary.toDouble . sum
-
-salariesQ1 :: [SalaryRecord.T] -> [Salary.T]
-salariesQ1 = map SalaryRecord.salaryQ1
 
 joinBudgetRecordsQ1 :: BudgetRecords.T -> [[RecordTuple]]
 joinBudgetRecordsQ1

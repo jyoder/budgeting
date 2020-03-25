@@ -52,3 +52,15 @@ spec = do
           [ BudgetReport.Spend "Football" 100.00,
             BudgetReport.Spend "Hockey" 50.00
           ]
+    it "returns Q1 spend of $50.00 for Football and Hockey if a teammate is split between two teams across the priorities" $ do
+      let (rams, ramsCanucks) = (Teams.make ["Rams"], Teams.make ["Rams", "Canucks"])
+      let ramsPriority = PriorityRecord.T 1 "Rams" "Football" "Football" "Football" "Football"
+      let canucksPriority = PriorityRecord.T 1 "Canucks" "Hockey" "Hockey" "Hockey" "Hockey"
+      let bobSalary = SalaryRecord.T 1 "10" "Bob" 100.00 200.00 300.00 400.00
+      let bobTeammate = TeammateRecord.T 1 "10" "Bob" "Sports" ramsCanucks rams rams rams
+      let records = BudgetRecords.T [ramsPriority, canucksPriority] [bobSalary] [bobTeammate]
+      ReportGenerator.generate records
+        `shouldBe` BudgetReport.T
+          [ BudgetReport.Spend "Football" 50.00,
+            BudgetReport.Spend "Hockey" 50.00
+          ]
