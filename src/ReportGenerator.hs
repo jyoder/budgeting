@@ -3,7 +3,6 @@ module ReportGenerator (generate) where
 import qualified BudgetRecords
 import qualified BudgetReport
 import qualified Control.Applicative
-import qualified Money
 import qualified PriorityRecord
 import Protolude
 import qualified SalaryRecord
@@ -22,12 +21,12 @@ makeSpend :: [RecordTuple] -> BudgetReport.Spend
 makeSpend [] = BudgetReport.Spend "Undefined" 0.00
 makeSpend (r : rs) = BudgetReport.Spend priority spendQ1
   where
-    spendQ1 = sum $ adjustedSalariesQ1 $ r : rs
+    spendQ1 = sum $ splitSalariesQ1 $ r : rs
     priority = PriorityRecord.priorityQ1 (fst3 r)
-    adjustedSalariesQ1 = map adjustedSalaryQ1
-    adjustedSalaryQ1 (_, salary, teammate) = salaryQ1 salary / teamCount teammate
-    salaryQ1 = Money.toDouble . SalaryRecord.salaryQ1
-    teamCount = fromIntegral . length . Teams.toList . TeammateRecord.teamsQ1
+    splitSalariesQ1 = map splitSalaryQ1
+    splitSalaryQ1 (_, salary, teammate) = salaryQ1 salary / fromIntegral (teamCount teammate)
+    salaryQ1 = SalaryRecord.salaryQ1
+    teamCount = length . Teams.toList . TeammateRecord.teamsQ1
     fst3 (p, _, _) = p
 
 joinBudgetRecordsQ1 :: BudgetRecords.T -> [[RecordTuple]]
