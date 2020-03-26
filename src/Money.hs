@@ -1,4 +1,4 @@
-module Salary (T, toDouble) where
+module Money (T, toDouble) where
 
 import qualified Data.Csv
 import Protolude

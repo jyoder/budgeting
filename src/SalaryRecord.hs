@@ -4,19 +4,19 @@ import qualified Bhc
 import Data.Csv ((.:))
 import qualified Data.Csv
 import qualified LineNumber
+import qualified Money
 import qualified Name
 import Protolude
-import qualified Salary
 
 data T
   = T
       { lineNumber :: !LineNumber.T,
         bhc :: !Bhc.T,
         name :: !Name.T,
-        salaryQ1 :: !Salary.T,
-        salaryQ2 :: !Salary.T,
-        salaryQ3 :: !Salary.T,
-        salaryQ4 :: !Salary.T
+        salaryQ1 :: !Money.T,
+        salaryQ2 :: !Money.T,
+        salaryQ3 :: !Money.T,
+        salaryQ4 :: !Money.T
       }
   deriving (Show, Eq, Ord)
 
