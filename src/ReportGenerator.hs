@@ -12,8 +12,9 @@ import qualified Teams
 type RecordTuple = (PriorityRecord.T, SalaryRecord.T, TeammateRecord.T)
 
 generate :: BudgetRecords.T -> BudgetReport.T
-generate budgetRecords = BudgetReport.T spendsQ1
+generate budgetRecords = BudgetReport.T sortedSpendsQ1
   where
+    sortedSpendsQ1 = sortBy compareSpends spendsQ1
     spendsQ1 = map makeSpend recordTuplesQ1
     recordTuplesQ1 = joinBudgetRecordsQ1 budgetRecords
 
@@ -46,6 +47,11 @@ joinedInQ1 :: RecordTuple -> Bool
 joinedInQ1 (priority, salary, teammate) =
   PriorityRecord.team priority `elem` Teams.toList (TeammateRecord.teamsQ1 teammate)
     && TeammateRecord.bhc teammate == SalaryRecord.bhc salary
+
+compareSpends :: BudgetReport.Spend -> BudgetReport.Spend -> Ordering
+compareSpends spend1 spend2
+  | BudgetReport.priority spend1 < BudgetReport.priority spend2 = LT
+  | otherwise = GT
 
 cartesianProduct :: [a] -> [b] -> [c] -> [(a, b, c)]
 cartesianProduct = Control.Applicative.liftA3 (,,)
