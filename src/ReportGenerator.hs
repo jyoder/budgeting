@@ -31,7 +31,8 @@ makeRow ::
   (Priority.T, Money.T) ->
   (Priority.T, Money.T) ->
   BudgetReport.Row
-makeRow (priority, spendQ1) _ _ _ = BudgetReport.Row priority spendQ1
+makeRow (priority, spendQ1) (_, spendQ2) (_, spendQ3) (_, spendQ4) =
+  BudgetReport.Row priority spendQ1 spendQ2 spendQ3 spendQ4
 
 spendByQuarter :: Quarter.T -> BudgetRecords.T -> [(Priority.T, Money.T)]
 spendByQuarter quarter budgetRecords = Map.toAscList spend
