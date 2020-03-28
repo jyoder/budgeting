@@ -1,4 +1,4 @@
-module SalaryRecord (T (..)) where
+module SalaryRecord (T (..), salary) where
 
 import qualified Bhc
 import Data.Csv ((.:))
@@ -7,6 +7,7 @@ import qualified LineNumber
 import qualified Money
 import qualified Name
 import Protolude
+import qualified Quarter
 
 data T
   = T
@@ -30,3 +31,9 @@ instance Data.Csv.FromNamedRecord T where
       <*> m .: "Salary Q2"
       <*> m .: "Salary Q3"
       <*> m .: "Salary Q4"
+
+salary :: Quarter.T -> T -> Money.T
+salary Quarter.Q1 = salaryQ1
+salary Quarter.Q2 = salaryQ2
+salary Quarter.Q3 = salaryQ3
+salary Quarter.Q4 = salaryQ4

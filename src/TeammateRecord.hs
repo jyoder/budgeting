@@ -1,4 +1,4 @@
-module TeammateRecord (T (..)) where
+module TeammateRecord (T (..), teams) where
 
 import qualified Bhc
 import Data.Csv ((.:))
@@ -7,6 +7,7 @@ import qualified Department
 import qualified LineNumber
 import qualified Name
 import Protolude
+import qualified Quarter
 import qualified Teams
 
 data T
@@ -33,3 +34,9 @@ instance Data.Csv.FromNamedRecord T where
       <*> m .: "Teams Q2"
       <*> m .: "Teams Q3"
       <*> m .: "Teams Q4"
+
+teams :: Quarter.T -> T -> Teams.T
+teams Quarter.Q1 = teamsQ1
+teams Quarter.Q2 = teamsQ2
+teams Quarter.Q3 = teamsQ3
+teams Quarter.Q4 = teamsQ4

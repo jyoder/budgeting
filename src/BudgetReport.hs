@@ -1,13 +1,13 @@
-module BudgetReport (T (..), Spend (..)) where
+module BudgetReport (T (..), Row (..)) where
 
 import qualified Money
 import qualified Priority
 import Protolude
 
-newtype T = T [Spend] deriving (Show, Eq)
+newtype T = T [Row] deriving (Show, Eq)
 
-data Spend
-  = Spend
+data Row
+  = Row
       { priority :: Priority.T,
         spendQ1 :: Money.T
       }
