@@ -11,7 +11,7 @@ spec = do
   describe "toList" $ do
     it "converts the teams to a list" $ do
       let teams = Teams.make ["Rams", "Bears"]
-      Teams.toList teams `shouldBe` ["Rams", "Bears"]
+       in Teams.toList teams `shouldBe` ["Rams", "Bears"]
   describe "FromField" $ do
     it "decodes a single team" $ do
       decodeByName "Teams\nBears"
@@ -34,7 +34,7 @@ spec = do
   describe "show" $ do
     it "converts teams to text" $ do
       let teams = Teams.make ["Rams", "Bears"]
-      show teams `shouldBe` ("T [T \"Rams\",T \"Bears\"]" :: Text)
+       in show teams `shouldBe` ("T [T \"Rams\",T \"Bears\"]" :: Text)
   describe "Eq" $ do
     it "returns whether teams are equal" $ do
       let teams1 = Teams.make ["Rams", "Bears"]

@@ -28,8 +28,8 @@ spec = do
   describe "Eq" $ do
     it "tests whether two priority records are equal" $ do
       let record1 = PriorityRecord.T 0 "49ers" "Football" "Soccer" "Hockey" "Foosball"
-      let record2 = PriorityRecord.T 1 "49ers" "Football" "Soccer" "Hockey" "Foosball"
-      record1 `shouldNotBe` record2
+          record2 = PriorityRecord.T 1 "49ers" "Football" "Soccer" "Hockey" "Foosball"
+       in record1 `shouldNotBe` record2
   describe "Ord" $ do
     it "tests the ordering of priority records" $ do
       let record1 = PriorityRecord.T 0 "49ers" "Football" "Soccer" "Hockey" "Foosball"

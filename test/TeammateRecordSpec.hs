@@ -24,17 +24,17 @@ spec = do
   describe "decodeByName" $ do
     it "returns a TeammateRecord when all columns are present" $ do
       let (rams, raiders, dolphins) = (Teams.make ["Rams"], Teams.make ["Raiders"], Teams.make ["Dolphins"])
-      decodeByName "Bhc,Name,Department,Teams Q1,Teams Q2,Teams Q3,Teams Q4\n123,Bob Bobberson,Sports,Rams,Raiders,Rams,Dolphins"
-        `shouldBe` Right
-          ( fromList ["Bhc", "Name", "Department", "Teams Q1", "Teams Q2", "Teams Q3", "Teams Q4"],
-            fromList [TeammateRecord.T 0 "123" "Bob Bobberson" "Sports" rams raiders rams dolphins]
-          )
+       in decodeByName "Bhc,Name,Department,Teams Q1,Teams Q2,Teams Q3,Teams Q4\n123,Bob Bobberson,Sports,Rams,Raiders,Rams,Dolphins"
+            `shouldBe` Right
+              ( fromList ["Bhc", "Name", "Department", "Teams Q1", "Teams Q2", "Teams Q3", "Teams Q4"],
+                fromList [TeammateRecord.T 0 "123" "Bob Bobberson" "Sports" rams raiders rams dolphins]
+              )
   describe "Eq" $ do
     it "tests whether two teammate records are equal" $ do
       let (rams, raiders, dolphins) = (Teams.make ["Rams"], Teams.make ["Raiders"], Teams.make ["Dolphins"])
-      let record1 = TeammateRecord.T 1 "123" "Bob Bobberson" "Sports" rams raiders rams dolphins
-      let record2 = TeammateRecord.T 2 "124" "Bob Bobbers" "Sports" rams raiders rams dolphins
-      record1 `shouldNotBe` record2
+          record1 = TeammateRecord.T 1 "123" "Bob Bobberson" "Sports" rams raiders rams dolphins
+          record2 = TeammateRecord.T 2 "124" "Bob Bobbers" "Sports" rams raiders rams dolphins
+       in record1 `shouldNotBe` record2
   describe "Ord" $ do
     it "tests the ordering of teammate records" $ do
       let (rams, raiders, bears) = (Teams.make ["Rams"], Teams.make ["Raiders"], Teams.make ["Bears"])

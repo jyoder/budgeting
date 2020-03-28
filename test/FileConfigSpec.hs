@@ -17,4 +17,4 @@ spec = do
   describe "show" $ do
     it "converts the record to text" $ do
       let config = FileConfig.T (Path.fromText "a") (Path.fromText "b") (Path.fromText "c")
-      show config `shouldBe` ("T {prioritiesFile = T \"a\", salariesFile = T \"b\", teammatesFile = T \"c\"}" :: Text)
+       in show config `shouldBe` ("T {prioritiesFile = T \"a\", salariesFile = T \"b\", teammatesFile = T \"c\"}" :: Text)

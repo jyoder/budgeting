@@ -31,7 +31,7 @@ read T {mockFileSystem} = MockFileSystem.read mockFileSystem
 print :: T -> Text -> T
 print system text = do
   let T {mockConsole} = system
-  system {mockConsole = MockConsole.print mockConsole text}
+   in system {mockConsole = MockConsole.print mockConsole text}
 
 printed :: T -> [Text]
 printed T {mockConsole} = MockConsole.printed mockConsole
