@@ -1,4 +1,4 @@
-module Money (T, toDouble) where
+module Money (T) where
 
 import qualified Data.Csv
 import qualified Data.Double.Conversion.Text
@@ -10,9 +10,6 @@ newtype T = T Double
 
 instance Data.Csv.ToField T where
   toField money = Data.Csv.toField $ toText money
-
-toDouble :: T -> Double
-toDouble (T value) = value
 
 toText :: T -> Text
 toText (T value) = Data.Double.Conversion.Text.toFixed 2 (millions value)
