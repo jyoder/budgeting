@@ -21,14 +21,15 @@ description:         Please see the README on GitHub at <https://github.com/gith
 
 dependencies:
 - base >= 4.7 && < 5
-- protolude
-- vector
-- cassava
 - bytestring
-- unordered-containers
+- cassava
 - containers
-- text
+- double-conversion
 - mtl
+- protolude
+- text
+- unordered-containers
+- vector
 
 library:
   source-dirs: src

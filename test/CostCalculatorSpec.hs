@@ -8,4 +8,4 @@ spec :: Spec
 spec = do
   describe "cost" $ do
     it "returns the true cost of a person's salary" $ do
-      CostCalculator.cost 100000 `shouldBe` 100000.0
+      CostCalculator.cost 100000 `shouldBe` 200000.00

@@ -3,7 +3,9 @@ module Application (run) where
 import qualified Actions
 import qualified Argument
 import qualified BudgetRecords
+import qualified BudgetReport
 import qualified Control.Monad.Except as E
+import qualified CostCalculator
 import qualified Csv
 import qualified Data.Text
 import qualified Error
@@ -11,6 +13,7 @@ import qualified FileConfig
 import qualified Path
 import qualified Preprocessor
 import Protolude
+import qualified ReportGenerator
 import qualified Result
 import qualified ValidationError
 import qualified Validator
@@ -27,8 +30,12 @@ run' actions = do
   arguments <- lift $ Actions.getArguments actions
   fileConfig <- E.liftEither $ parseArguments arguments
   records <- loadBudgetRecords (Actions.read actions) fileConfig
-  let validated = Validator.validate $ Preprocessor.preprocess records
-  lift $ Actions.print actions $ Data.Text.unlines (map ValidationError.toText validated)
+  let errors = Validator.validate $ Preprocessor.preprocess records
+  if null errors
+    then
+      let report = ReportGenerator.generate CostCalculator.cost records
+       in lift $ Actions.print actions $ BudgetReport.toCsv report
+    else lift $ Actions.print actions $ Data.Text.unlines (map ValidationError.toText errors)
 
 parseArguments :: [Argument.T] -> Result.T FileConfig.T
 parseArguments arguments = case argumentToPath <$> arguments of

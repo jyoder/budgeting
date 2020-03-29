@@ -117,3 +117,16 @@ spec = do
               ]
           (_, system') = StateActions.run (Application.run StateActions.make) system
        in MockSystem.printed system' `shouldBe` ["Missing BHC \"123\" in teammates file, found on line 1 in salaries file\nMissing team \"Rams\" in teammates file, found on line 1 in priorities file\n"]
+    it "prints a budget report when data passes validation" $ do
+      let teammatesData = "Bhc,Name,Department,Teams Q1,Teams Q2,Teams Q3,Teams Q4\n123,Bob,Sports,Rams,Rams,Rams,Rams"
+          prioritiesData = "Name,Priority Q1,Priority Q2,Priority Q3,Priority Q4\nRams,Football,Soccer,Football,Ping Pong"
+          salariesData = "Bhc,Name,Salary Q1,Salary Q2,Salary Q3,Salary Q4\n123,Bob,100000,200000,300000,400000"
+          system =
+            MockSystem.make
+              (Argument.fromText <$> ["priorities.csv", "salaries.csv", "teammates.csv"])
+              [ (Path.fromText "priorities.csv", Result.success prioritiesData),
+                (Path.fromText "salaries.csv", Result.success salariesData),
+                (Path.fromText "teammates.csv", Result.success teammatesData)
+              ]
+          (_, system') = StateActions.run (Application.run StateActions.make) system
+       in MockSystem.printed system' `shouldBe` ["Priority,Spend Q1,Spend Q2,Spend Q3,Spend Q4\r\nFootball,0.20,0.00,0.50,0.00\r\nPing Pong,0.00,0.00,0.00,0.65\r\nSoccer,0.00,0.35,0.00,0.00\r\n"]
