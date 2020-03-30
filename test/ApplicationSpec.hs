@@ -116,7 +116,7 @@ spec = do
                 (Path.fromText "teammates.csv", Result.success teammatesData)
               ]
           (_, system') = StateActions.run (Application.run StateActions.make) system
-       in MockSystem.printed system' `shouldBe` ["Missing BHC \"123\" in teammates file, found on line 1 in salaries file\nMissing team \"Rams\" in teammates file, found on line 1 in priorities file\n"]
+       in MockSystem.printed system' `shouldBe` ["Missing BHC \"123\" in teammates file, found on line 2 in salaries file\nMissing team \"Rams\" in teammates file, found on line 2 in priorities file\n"]
     it "prints a budget report when data passes validation" $ do
       let teammatesData = "Bhc,Name,Department,Teams Q1,Teams Q2,Teams Q3,Teams Q4\n123,Bob,Sports,Rams,Rams,Rams,Rams"
           prioritiesData = "Name,Priority Q1,Priority Q2,Priority Q3,Priority Q4\nRams,Football,Soccer,Football,Ping Pong"

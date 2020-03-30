@@ -18,8 +18,8 @@ spec = do
           records = BudgetRecords.T [priority1, priority2] [] []
        in Preprocessor.preprocess records
             `shouldBe` BudgetRecords.T
-              [ PriorityRecord.T 1 "Rams" "P1" "P2" "P3" "P4",
-                PriorityRecord.T 2 "Goats" "P1" "P2" "P3" "P4"
+              [ PriorityRecord.T 2 "Rams" "P1" "P2" "P3" "P4",
+                PriorityRecord.T 3 "Goats" "P1" "P2" "P3" "P4"
               ]
               []
               []
@@ -30,8 +30,8 @@ spec = do
        in Preprocessor.preprocess records
             `shouldBe` BudgetRecords.T
               []
-              [ SalaryRecord.T 1 "Bob" "123" 100.0 100.0 100.0 100.0,
-                SalaryRecord.T 2 "Rob" "124" 100.0 100.0 100.0 100.0
+              [ SalaryRecord.T 2 "Bob" "123" 100.0 100.0 100.0 100.0,
+                SalaryRecord.T 3 "Rob" "124" 100.0 100.0 100.0 100.0
               ]
               []
     it "adds line numbers to teammates" $ do
@@ -43,8 +43,8 @@ spec = do
             `shouldBe` BudgetRecords.T
               []
               []
-              [ TeammateRecord.T 1 "Bob" "123" "Sports" rams rams rams rams,
-                TeammateRecord.T 2 "Rob" "124" "Sports" rams rams rams rams
+              [ TeammateRecord.T 2 "Bob" "123" "Sports" rams rams rams rams,
+                TeammateRecord.T 3 "Rob" "124" "Sports" rams rams rams rams
               ]
     it "removes teammates who are in the \"Web Operations\" department" $ do
       let rams = Teams.make ["Rams"]
@@ -55,7 +55,7 @@ spec = do
             `shouldBe` BudgetRecords.T
               []
               []
-              [ TeammateRecord.T 2 "Rob" "124" "Sports" rams rams rams rams
+              [ TeammateRecord.T 3 "Rob" "124" "Sports" rams rams rams rams
               ]
     it "removes teammates who are in the \"Web Operations\" department" $ do
       let rams = Teams.make ["Rams"]
@@ -66,5 +66,5 @@ spec = do
             `shouldBe` BudgetRecords.T
               []
               []
-              [ TeammateRecord.T 2 "Rob" "124" "Sports" rams rams rams rams
+              [ TeammateRecord.T 3 "Rob" "124" "Sports" rams rams rams rams
               ]

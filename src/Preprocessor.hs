@@ -42,4 +42,4 @@ onlyDevTeammates = filter $ not . Department.excludedFromDev . TeammateRecord.de
 recordsWithLineNumbers :: (LineNumber.T -> a -> a) -> [a] -> [a]
 recordsWithLineNumbers numberAssigner = zipWith numberAssigner lineNumbers
   where
-    lineNumbers = iterate LineNumber.next 1
+    lineNumbers = iterate LineNumber.next 2
