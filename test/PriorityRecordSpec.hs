@@ -1,7 +1,8 @@
 module PriorityRecordSpec (spec) where
 
-import Data.Csv (decodeByName)
-import Data.Vector (fromList)
+import qualified CommonSpecs
+import qualified Data.Csv
+import qualified Data.Vector
 import qualified PriorityRecord
 import Protolude
 import Test.Hspec
@@ -20,24 +21,14 @@ spec = do
   describe "decodeByName" $ do
     it "returns a PriorityRecord when all columns are present" $
       do
-        decodeByName "Name,Priority Q1,Priority Q2,Priority Q3,Priority Q4\n49ers,Football,Soccer,Hockey,Foosball"
+        Data.Csv.decodeByName "Name,Priority Q1,Priority Q2,Priority Q3,Priority Q4\n49ers,Football,Soccer,Hockey,Foosball"
         `shouldBe` Right
-          ( fromList ["Name", "Priority Q1", "Priority Q2", "Priority Q3", "Priority Q4"],
-            fromList [PriorityRecord.T 0 "49ers" "Football" "Soccer" "Hockey" "Foosball"]
+          ( Data.Vector.fromList ["Name", "Priority Q1", "Priority Q2", "Priority Q3", "Priority Q4"],
+            Data.Vector.fromList [PriorityRecord.T 0 "49ers" "Football" "Soccer" "Hockey" "Foosball"]
           )
-  describe "Eq" $ do
-    it "tests whether two priority records are equal" $ do
-      let record1 = PriorityRecord.T 0 "49ers" "Football" "Soccer" "Hockey" "Foosball"
-          record2 = PriorityRecord.T 1 "49ers" "Football" "Soccer" "Hockey" "Foosball"
-       in record1 `shouldNotBe` record2
-  describe "Ord" $ do
-    it "tests the ordering of priority records" $ do
-      let record1 = PriorityRecord.T 0 "49ers" "Football" "Soccer" "Hockey" "Foosball"
-      let record2 = PriorityRecord.T 0 "59ers" "Football" "Soccer" "Hockey" "Foosball"
-      compare record1 record2 `shouldBe` LT
-      record2 `shouldSatisfy` (<) record1
-      record2 `shouldSatisfy` (<=) record1
-      record1 `shouldSatisfy` (>) record2
-      record1 `shouldSatisfy` (>=) record2
-      max record1 record2 `shouldBe` record2
-      min record1 record2 `shouldBe` record1
+  CommonSpecs.eqSpec
+    (PriorityRecord.T 0 "A" "B" "C" "D" "E")
+    (PriorityRecord.T 1 "A" "B" "C" "D" "E")
+  CommonSpecs.ordSpec
+    (PriorityRecord.T 0 "A" "B" "C" "D" "E")
+    (PriorityRecord.T 1 "A" "B" "C" "D" "E")

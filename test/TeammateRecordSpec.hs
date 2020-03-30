@@ -1,7 +1,8 @@
 module TeammateRecordSpec (spec) where
 
-import Data.Csv (decodeByName)
-import Data.Vector (fromList)
+import qualified CommonSpecs
+import qualified Data.Csv
+import qualified Data.Vector
 import Protolude
 import qualified TeammateRecord
 import qualified Teams
@@ -24,26 +25,17 @@ spec = do
   describe "decodeByName" $ do
     it "returns a TeammateRecord when all columns are present" $ do
       let (rams, raiders, dolphins) = (Teams.make ["Rams"], Teams.make ["Raiders"], Teams.make ["Dolphins"])
-       in decodeByName "Bhc,Name,Department,Teams Q1,Teams Q2,Teams Q3,Teams Q4\n123,Bob Bobberson,Sports,Rams,Raiders,Rams,Dolphins"
+       in Data.Csv.decodeByName "Bhc,Name,Department,Teams Q1,Teams Q2,Teams Q3,Teams Q4\n123,Bob Bobberson,Sports,Rams,Raiders,Rams,Dolphins"
             `shouldBe` Right
-              ( fromList ["Bhc", "Name", "Department", "Teams Q1", "Teams Q2", "Teams Q3", "Teams Q4"],
-                fromList [TeammateRecord.T 0 "123" "Bob Bobberson" "Sports" rams raiders rams dolphins]
+              ( Data.Vector.fromList ["Bhc", "Name", "Department", "Teams Q1", "Teams Q2", "Teams Q3", "Teams Q4"],
+                Data.Vector.fromList [TeammateRecord.T 0 "123" "Bob Bobberson" "Sports" rams raiders rams dolphins]
               )
-  describe "Eq" $ do
-    it "tests whether two teammate records are equal" $ do
-      let (rams, raiders, dolphins) = (Teams.make ["Rams"], Teams.make ["Raiders"], Teams.make ["Dolphins"])
-          record1 = TeammateRecord.T 1 "123" "Bob Bobberson" "Sports" rams raiders rams dolphins
-          record2 = TeammateRecord.T 2 "124" "Bob Bobbers" "Sports" rams raiders rams dolphins
-       in record1 `shouldNotBe` record2
-  describe "Ord" $ do
-    it "tests the ordering of teammate records" $ do
-      let (rams, raiders, bears) = (Teams.make ["Rams"], Teams.make ["Raiders"], Teams.make ["Bears"])
-      let record1 = TeammateRecord.T 1 "123" "Bob Bobberson" "Sports" rams raiders rams bears
-      let record2 = TeammateRecord.T 2 "124" "Bob Bobbers" "Sports" rams raiders rams bears
-      compare record1 record2 `shouldBe` LT
-      record2 `shouldSatisfy` (<) record1
-      record2 `shouldSatisfy` (<=) record1
-      record1 `shouldSatisfy` (>) record2
-      record1 `shouldSatisfy` (>=) record2
-      max record1 record2 `shouldBe` record2
-      min record1 record2 `shouldBe` record1
+  CommonSpecs.eqSpec
+    (TeammateRecord.T 0 "A" "B" "C" teams teams teams teams)
+    (TeammateRecord.T 1 "A" "B" "C" teams teams teams teams)
+  CommonSpecs.ordSpec
+    (TeammateRecord.T 0 "A" "B" "C" teams teams teams teams)
+    (TeammateRecord.T 1 "A" "B" "C" teams teams teams teams)
+
+teams :: Teams.T
+teams = Teams.make ["Team"]
