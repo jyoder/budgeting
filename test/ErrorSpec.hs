@@ -1,22 +1,16 @@
 module ErrorSpec (spec) where
 
+import qualified CommonSpecs
 import qualified Error
 import Protolude
 import Test.Hspec
 
 spec :: Spec
 spec = do
-  describe "toText" $ do
-    it "converts the error to text" $ do
-      let error = Error.make "some error"
-       in Error.toText error `shouldBe` "some error"
   describe "prepend" $ do
     it "prepends the given text to the error message" $ do
       let error = Error.make "error"
        in Error.prepend "some: " error `shouldBe` Error.make "some: error"
-  describe "Show" $ do
-    it "converts the error to text" $ do
-      show (Error.make "error") `shouldBe` ("T (Message \"error\")" :: Text)
-  describe "Eq" $ do
-    it "tests whether two errors are equal" $ do
-      Error.make "error1" `shouldNotBe` Error.make "error2"
+  CommonSpecs.showSpec (Error.make "error") "T (Message \"error\")"
+  CommonSpecs.eqSpec (Error.make "error1") (Error.make "error2")
+  CommonSpecs.toTextSpec Error.toText (Error.make "error") "error"

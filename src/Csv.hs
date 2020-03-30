@@ -18,7 +18,7 @@ decode text = case Data.Csv.decodeByName $ toLazyByteString text of
 encode :: Data.Csv.ToNamedRecord r => [Text] -> [r] -> Text
 encode headers records = csvText
   where
-    csvText = Data.Text.Encoding.decodeUtf8With (\_ _ -> Just '?') strictCsvByteString
+    csvText = Data.Text.Encoding.decodeUtf8 strictCsvByteString
     strictCsvByteString = Data.ByteString.Lazy.toStrict csvByteString
     csvByteString = Data.Csv.encodeByName headerVector records
     headerVector = Data.Vector.fromList $ map Data.Text.Encoding.encodeUtf8 headers

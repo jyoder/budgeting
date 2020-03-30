@@ -13,6 +13,7 @@ import qualified Quarter
 import qualified SalaryRecord
 import qualified TeammateRecord
 import qualified Teams
+import qualified Unsafe
 
 type RecordTuple = (PriorityRecord.T, SalaryRecord.T, TeammateRecord.T)
 
@@ -78,11 +79,10 @@ tupleGroups quarter tuples = map (tupleGroup quarter) (groupByPriority tuples)
     priority = PriorityRecord.priority quarter
 
 tupleGroup :: Quarter.T -> [RecordTuple] -> (Priority.T, [RecordTuple])
-tupleGroup _ [] = ("Undefined", [])
-tupleGroup quarter (t : ts) = (priority, tuples)
+tupleGroup quarter tuples = (priority, tuples)
   where
-    tuples = t : ts
-    priority = PriorityRecord.priority quarter $ fst3 t
+    priority = PriorityRecord.priority quarter $ fst3 firstTuple
+    firstTuple = Unsafe.unsafeHead tuples -- guaranteed not to be empty within this module
     fst3 (p, _, _) = p
 
 validTuple :: Quarter.T -> RecordTuple -> Bool
