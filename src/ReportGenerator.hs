@@ -1,8 +1,8 @@
 module ReportGenerator (generate) where
 
+import qualified Bhc
 import qualified BudgetRecords
 import qualified BudgetReport
-import qualified Control.Applicative
 import qualified Data.List
 import qualified Data.Map as Map
 import qualified Money
@@ -11,6 +11,7 @@ import qualified PriorityRecord
 import Protolude
 import qualified Quarter
 import qualified SalaryRecord
+import qualified Team
 import qualified TeammateRecord
 import qualified Teams
 import qualified Unsafe
@@ -35,7 +36,11 @@ makeRow ::
 makeRow (priority, spendQ1) (_, spendQ2) (_, spendQ3) (_, spendQ4) =
   BudgetReport.Row priority spendQ1 spendQ2 spendQ3 spendQ4
 
-spendByQuarter :: (Money.T -> Money.T) -> Quarter.T -> BudgetRecords.T -> [(Priority.T, Money.T)]
+spendByQuarter ::
+  (Money.T -> Money.T) ->
+  Quarter.T ->
+  BudgetRecords.T ->
+  [(Priority.T, Money.T)]
 spendByQuarter cost quarter budgetRecords = Map.toAscList spend
   where
     spend = Map.union computedSpendMap zeroedSpendMap
@@ -43,22 +48,24 @@ spendByQuarter cost quarter budgetRecords = Map.toAscList spend
     zeroedSpendMap = zeroSpendByPriority priorityRecords
     priorityRecords = BudgetRecords.priorityRecords budgetRecords
 
-spendByPriority :: (Money.T -> Money.T) -> Quarter.T -> BudgetRecords.T -> Map Priority.T Money.T
+spendByPriority ::
+  (Money.T -> Money.T) ->
+  Quarter.T ->
+  BudgetRecords.T ->
+  Map Priority.T Money.T
 spendByPriority
   cost
   quarter
-  BudgetRecords.T
-    { BudgetRecords.priorityRecords = priorities,
-      BudgetRecords.salaryRecords = salaries,
-      BudgetRecords.teammateRecords = teammates
-    } = Map.fromList spendList
+  budgetRecords = Map.fromList spendList
     where
       spendList = map (spendAmount cost quarter) groupedTuples
-      groupedTuples = tupleGroups quarter filteredTuples
-      filteredTuples = filter (validTuple quarter) tuples
-      tuples = cartesianProduct priorities salaries teammates
+      groupedTuples = tupleGroups quarter (recordTuples quarter budgetRecords)
 
-spendAmount :: (Money.T -> Money.T) -> Quarter.T -> (Priority.T, [RecordTuple]) -> (Priority.T, Money.T)
+spendAmount ::
+  (Money.T -> Money.T) ->
+  Quarter.T ->
+  (Priority.T, [RecordTuple]) ->
+  (Priority.T, Money.T)
 spendAmount cost quarter (priority, tuples) = (priority, cost $ sum $ splitSalaries tuples)
   where
     splitSalaries = map splitSalary
@@ -85,10 +92,49 @@ tupleGroup quarter tuples = (priority, tuples)
     firstTuple = Unsafe.unsafeHead tuples -- guaranteed not to be empty within this module
     fst3 (p, _, _) = p
 
-validTuple :: Quarter.T -> RecordTuple -> Bool
-validTuple quarter (priority, salary, teammate) =
-  PriorityRecord.team priority `elem` Teams.toList (TeammateRecord.teams quarter teammate)
-    && TeammateRecord.bhc teammate == SalaryRecord.bhc salary
+recordTuples :: Quarter.T -> BudgetRecords.T -> [RecordTuple]
+recordTuples
+  quarter
+  BudgetRecords.T
+    { BudgetRecords.priorityRecords = priorities,
+      BudgetRecords.salaryRecords = salaries,
+      BudgetRecords.teammateRecords = teammates
+    } = withPriorities priorities . withTeams quarter $ withTeammates salaries teammates
 
-cartesianProduct :: [a] -> [b] -> [c] -> [(a, b, c)]
-cartesianProduct = Control.Applicative.liftA3 (,,)
+withTeammates ::
+  [SalaryRecord.T] ->
+  [TeammateRecord.T] ->
+  [(SalaryRecord.T, TeammateRecord.T)]
+withTeammates salaries teammates =
+  Map.elems $ Map.intersectionWithKey pair salaryMap teammateMap
+  where
+    pair _ salary teammate = (salary, teammate)
+    salaryMap = salariesByBhc salaries
+    teammateMap = teammatesByBhc teammates
+
+withTeams ::
+  Quarter.T ->
+  [(SalaryRecord.T, TeammateRecord.T)] ->
+  [(SalaryRecord.T, TeammateRecord.T, Team.T)]
+withTeams quarter = concatMap triples
+  where
+    triples (salary, teammate) = map (salary,teammate,) (teams teammate)
+    teams teammate = Teams.toList $ TeammateRecord.teams quarter teammate
+
+withPriorities ::
+  [PriorityRecord.T] ->
+  [(SalaryRecord.T, TeammateRecord.T, Team.T)] ->
+  [RecordTuple]
+withPriorities priorities = mapMaybe recordTuple
+  where
+    recordTuple (salary, teammate, team) = (,salary,teammate) <$> Map.lookup team priorityMap
+    priorityMap = prioritiesByTeam priorities
+
+salariesByBhc :: [SalaryRecord.T] -> Map Bhc.T SalaryRecord.T
+salariesByBhc salaries = Map.fromList (map (\s -> (SalaryRecord.bhc s, s)) salaries)
+
+prioritiesByTeam :: [PriorityRecord.T] -> Map Team.T PriorityRecord.T
+prioritiesByTeam priorities = Map.fromList (map (\p -> (PriorityRecord.team p, p)) priorities)
+
+teammatesByBhc :: [TeammateRecord.T] -> Map Bhc.T TeammateRecord.T
+teammatesByBhc teammates = Map.fromList (map (\t -> (TeammateRecord.bhc t, t)) teammates)
