@@ -28,8 +28,7 @@ validate
         duplicateBhcsInTeammatesErrors teammateRecords,
         missingTeamInPrioritiesErrors teammateRecords priorityRecords,
         missingBhcInSalariesErrors teammateRecords salaryRecords,
-        missingBhcInTeammatesErrors salaryRecords teammateRecords,
-        missingTeamInTeammatesErrors priorityRecords teammateRecords
+        missingBhcInTeammatesErrors salaryRecords teammateRecords
       ]
 
 blankSalaryBhcErrors :: [SalaryRecord.T] -> [ValidationError.T]
@@ -108,17 +107,6 @@ missingBhcInTeammatesErrors salaries teammates = do
     line = SalaryRecord.lineNumber
     bhc = SalaryRecord.bhc
 
-missingTeamInTeammatesErrors :: [PriorityRecord.T] -> [TeammateRecord.T] -> [ValidationError.T]
-missingTeamInTeammatesErrors priorities teammates = do
-  map validationError missingTeamsPriorities
-  where
-    validationError (team, priority) = ValidationError.MissingTeamInTeammates (line priority) team
-    missingTeamsPriorities = Set.toList $ joinTeamsPrioritiesOnTeam missingTeamSet prioritySet
-    missingTeamSet = teamsMissingFromTeammates prioritySet teammateSet
-    prioritySet = Set.fromList priorities
-    teammateSet = Set.fromList teammates
-    line = PriorityRecord.lineNumber
-
 teammatesMissingFromSalaries :: Set TeammateRecord.T -> Set SalaryRecord.T -> Set TeammateRecord.T
 teammatesMissingFromSalaries teammates salaries = do
   Set.difference teammates present
@@ -134,10 +122,6 @@ salariesMissingFromTeammates salaries teammates = do
 teamsMissingFromPriorities :: Set TeammateRecord.T -> Set PriorityRecord.T -> Set Team.T
 teamsMissingFromPriorities teammates priorities =
   Set.difference (teamsFromTeammates teammates) (teamsFromPriorities priorities)
-
-teamsMissingFromTeammates :: Set PriorityRecord.T -> Set TeammateRecord.T -> Set Team.T
-teamsMissingFromTeammates priorities teammates =
-  Set.difference (teamsFromPriorities priorities) (teamsFromTeammates teammates)
 
 prioritiesWithDuplicateTeams :: Set PriorityRecord.T -> Set PriorityRecord.T
 prioritiesWithDuplicateTeams priorities =
@@ -174,12 +158,6 @@ joinTeamsTeammatesOnTeam teams teammates =
   Set.filter
     (\(team, teammate) -> team `elem` teamsFromTeammate teammate)
     (Set.cartesianProduct teams teammates)
-
-joinTeamsPrioritiesOnTeam :: Set Team.T -> Set PriorityRecord.T -> Set (Team.T, PriorityRecord.T)
-joinTeamsPrioritiesOnTeam teams priorities =
-  Set.filter
-    (\(team, priority) -> team == PriorityRecord.team priority)
-    (Set.cartesianProduct teams priorities)
 
 teamsFromTeammate :: TeammateRecord.T -> Set Team.T
 teamsFromTeammate

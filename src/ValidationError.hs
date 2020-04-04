@@ -14,7 +14,6 @@ data T
   | MissingTeamInPriorities LineNumber.T Team.T
   | MissingBhcInSalaries LineNumber.T Bhc.T
   | MissingBhcInTeammates LineNumber.T Bhc.T
-  | MissingTeamInTeammates LineNumber.T Team.T
   deriving (Show, Eq)
 
 toText :: T -> Text
@@ -34,5 +33,3 @@ toText (MissingBhcInSalaries lineNumber bhc) =
   "Missing BHC \"" <> Bhc.toText bhc <> "\" in salaries file, found on line " <> LineNumber.toText lineNumber <> " in teammates file"
 toText (MissingBhcInTeammates lineNumber bhc) =
   "Missing BHC \"" <> Bhc.toText bhc <> "\" in teammates file, found on line " <> LineNumber.toText lineNumber <> " in salaries file"
-toText (MissingTeamInTeammates lineNumber team) =
-  "Missing team \"" <> Team.toText team <> "\" in teammates file, found on line " <> LineNumber.toText lineNumber <> " in priorities file"

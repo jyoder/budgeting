@@ -16,6 +16,7 @@ spec = do
     it "returns an empty list when there are no validation errors" $ do
       let ramsPriority = PriorityRecord.T 4 "Rams" "P1" "P2" "P3" "P4"
           goatsPriority = PriorityRecord.T 1 "Goats" "P1" "P2" "P3" "P4"
+          extraPriority = PriorityRecord.T 5 "Extra" "P1" "P2" "P3" "P4"
           jetsPriority = PriorityRecord.T 2 "Jets" "P1" "P2" "P3" "P4"
           bobSalary = SalaryRecord.T 1 "123" "Bob" 100.0 100.0 100.0 100.0
           robSalary = SalaryRecord.T 2 "124" "Rob" 101.0 101.0 101.0 101.0
@@ -23,7 +24,7 @@ spec = do
           bobTeammate = TeammateRecord.T 1 "123" "Bob" "Sports" rams rams rams rams
           robTeammate = TeammateRecord.T 2 "124" "Rob" "Sports" goats goats goats goats
           patTeammate = TeammateRecord.T 3 "125" "Pat" "Extreme Sports" goats goats goatsJets goatsJets
-          priorities = [goatsPriority, jetsPriority, ramsPriority]
+          priorities = [goatsPriority, jetsPriority, ramsPriority, extraPriority]
           salaries = [bobSalary, robSalary, patSalary]
           teammates = [bobTeammate, robTeammate, patTeammate]
           records = BudgetRecords.T priorities salaries teammates
@@ -84,12 +85,6 @@ spec = do
       let teammate = TeammateRecord.T 1 "123" "Bob" "Sports" goats goats goats goats
           records = BudgetRecords.T [] [] [teammate]
        in Validator.validate records `shouldContain` [ValidationError.MissingBhcInSalaries 1 "123"]
-    it "returns an error when a team is found in salaries that is not present in teammates" $ do
-      let priority = PriorityRecord.T 1 "Goats" "P1" "P2" "P3" "P4"
-          records = BudgetRecords.T [priority] [] []
-       in Validator.validate records
-            `shouldContain` [ ValidationError.MissingTeamInTeammates 1 "Goats"
-                            ]
     it "returns multiple errors when several validations fail" $ do
       let ramsPriority = PriorityRecord.T 4 "Rams" "P1" "P2" "P3" "P4"
           goatsPriority = PriorityRecord.T 1 "Goats" "P1" "P2" "P3" "P4"
@@ -111,8 +106,7 @@ spec = do
                                 ValidationError.DuplicateBhcInTeammates 1 "123",
                                 ValidationError.DuplicateBhcInTeammates 2 "123",
                                 ValidationError.MissingBhcInSalaries 3 "125",
-                                ValidationError.MissingBhcInTeammates 3 "",
-                                ValidationError.MissingTeamInTeammates 2 "Jets"
+                                ValidationError.MissingBhcInTeammates 3 ""
                               ]
 
 rams :: Teams.T
