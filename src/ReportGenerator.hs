@@ -79,10 +79,12 @@ zeroSpendByPriority priorities = Map.fromList $ map (,0.00) allPriorities
     allPriorities = concatMap PriorityRecord.allPriorities priorities
 
 tupleGroups :: Quarter.T -> [RecordTuple] -> [(Priority.T, [RecordTuple])]
-tupleGroups quarter tuples = map (tupleGroup quarter) (groupByPriority tuples)
+tupleGroups quarter tuples = map (tupleGroup quarter) (groupByPriority sortedTuples)
   where
     groupByPriority = groupBy samePriority
+    sortedTuples = sortBy compareTuples tuples
     samePriority (p1, _, _) (p2, _, _) = priority p1 == priority p2
+    compareTuples (p1, _, _) (p2, _, _) = priority p1 `compare` priority p2
     priority = PriorityRecord.priority quarter
 
 tupleGroup :: Quarter.T -> [RecordTuple] -> (Priority.T, [RecordTuple])

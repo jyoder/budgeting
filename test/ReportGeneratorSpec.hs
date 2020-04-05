@@ -55,6 +55,26 @@ spec = do
               [ BudgetReport.Row "Football" 100.00 400.00 600.00 800.00,
                 BudgetReport.Row "Hockey" 50.00 0.00 0.00 0.00
               ]
+    it "returns the proper spend regardless of the order in which priorities are processed" $ do
+      let (rams, canucks) = (Teams.make ["Rams"], Teams.make ["Canucks"])
+          ramsPriority = PriorityRecord.T 1 "Rams" "Football" "Football" "Football" "Football"
+          canucksPriority = PriorityRecord.T 1 "Canucks" "Hockey" "Hockey" "Hockey" "Hockey"
+          bobSalary = SalaryRecord.T 1 "10" "Bob" 100.00 200.00 300.00 400.00
+          robSalary = SalaryRecord.T 2 "11" "Rob" 50.00 200.00 300.00 400.00
+          nobSalary = SalaryRecord.T 3 "12" "Nob" 1.00 2.00 3.00 4.00
+          bobTeammate = TeammateRecord.T 1 "10" "Bob" "Sports" rams rams rams rams
+          robTeammate = TeammateRecord.T 2 "11" "Rob" "Sports" canucks rams rams rams
+          nobTeammate = TeammateRecord.T 3 "12" "Nob" "Sports" rams rams rams rams
+          records =
+            BudgetRecords.T
+              [ramsPriority, canucksPriority]
+              [nobSalary, bobSalary, robSalary]
+              [bobTeammate, nobTeammate, robTeammate]
+       in ReportGenerator.generate identity records
+            `shouldBe` BudgetReport.T
+              [ BudgetReport.Row "Football" 101.00 402.00 603.00 804.00,
+                BudgetReport.Row "Hockey" 50.00 0.00 0.00 0.00
+              ]
     it "returns Q1 spend of $50.00 for Football and Hockey if a teammate is split between two teams across the priorities" $ do
       let (rams, ramsCanucks) = (Teams.make ["Rams"], Teams.make ["Rams", "Canucks"])
           ramsPriority = PriorityRecord.T 1 "Rams" "Football" "Football" "Football" "Football"
