@@ -66,11 +66,11 @@ spendAmount ::
   Quarter.T ->
   (Priority.T, [RecordTuple]) ->
   (Priority.T, Money.T)
-spendAmount cost quarter (priority, tuples) = (priority, cost $ sum $ splitSalaries tuples)
+spendAmount cost quarter (priority, tuples) = (priority, sum $ splitSalaries tuples)
   where
     splitSalaries = map splitSalary
     splitSalary (_, salary, teammate) = salaryInQuarter salary / fromIntegral (teamCount teammate)
-    salaryInQuarter = SalaryRecord.salary quarter
+    salaryInQuarter = cost . SalaryRecord.salary quarter
     teamCount = length . Teams.toList . TeammateRecord.teams quarter
 
 zeroSpendByPriority :: [PriorityRecord.T] -> Map Priority.T Money.T

@@ -105,12 +105,14 @@ spec = do
                                     BudgetReport.Row "Hockey" 50.00 0.00 0.00 0.00
                                   ]
                               ]
-    it "returns a Q1 spend of $100.00 for a priority with a teammate who makes $100.00 in Q1" $ do
-      let cost = (*) 2.0
+    it "returns spend in which the cost function has been applied to each salary" $ do
+      let cost salary = (salary + 300.00) * 2.0
           rams = Teams.make ["Rams"]
           ramsPriority = PriorityRecord.T 1 "Rams" "Football" "Football" "Football" "Football"
           bobSalary = SalaryRecord.T 1 "10" "Bob" 100.00 200.00 300.00 400.00
           bobTeammate = TeammateRecord.T 1 "10" "Bob" "Sports" rams rams rams rams
-          records = BudgetRecords.T [ramsPriority] [bobSalary] [bobTeammate]
+          robSalary = SalaryRecord.T 1 "11" "Rob" 100.00 200.00 300.00 400.00
+          robTeammate = TeammateRecord.T 1 "11" "Rob" "Sports" rams rams rams rams
+          records = BudgetRecords.T [ramsPriority] [bobSalary, robSalary] [bobTeammate, robTeammate]
        in ReportGenerator.generate cost records
-            `shouldBe` BudgetReport.T [BudgetReport.Row "Football" 200.00 400.00 600.00 800.00]
+            `shouldBe` BudgetReport.T [BudgetReport.Row "Football" 1600.00 2000.00 2400.00 2800.00]
