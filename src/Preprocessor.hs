@@ -9,7 +9,14 @@ import qualified SalaryRecord
 import qualified TeammateRecord
 
 preprocess :: BudgetRecords.T -> BudgetRecords.T
-preprocess budgetRecords = onlyDevRecords $ withLineNumbers budgetRecords
+preprocess budgetRecords = onlyDevRecords . withLineNumbers $ withDefaultTeam budgetRecords
+
+withDefaultTeam :: BudgetRecords.T -> BudgetRecords.T
+withDefaultTeam budgetRecords =
+  budgetRecords {BudgetRecords.teammateRecords = teammatesWithDefault}
+  where
+    teammatesWithDefault = map TeammateRecord.withDefaultTeam teammates
+    teammates = BudgetRecords.teammateRecords budgetRecords
 
 withLineNumbers :: BudgetRecords.T -> BudgetRecords.T
 withLineNumbers

@@ -4,6 +4,7 @@ import qualified CommonSpecs
 import qualified Data.Csv
 import qualified Data.Vector
 import Protolude
+import qualified Quarter
 import qualified TeammateRecord
 import qualified Teams
 import Test.Hspec
@@ -30,6 +31,29 @@ spec = do
               ( Data.Vector.fromList ["Bhc", "Name", "Department", "Teams Q1", "Teams Q2", "Teams Q3", "Teams Q4"],
                 Data.Vector.fromList [TeammateRecord.T 0 "123" "Bob Bobberson" "Sports" rams raiders rams dolphins]
               )
+  describe "teams" $ do
+    it "returns the teams for the specified quarter" $ do
+      let rams = Teams.make ["Rams"]
+      let raiders = Teams.make ["Raiders"]
+      let dolphins = Teams.make ["Dolphins"]
+      let chefs = Teams.make ["Chefs"]
+      let record = TeammateRecord.T 1 "123" "Bob" "Sports" rams raiders dolphins chefs
+      TeammateRecord.teams Quarter.Q1 record `shouldBe` rams
+      TeammateRecord.teams Quarter.Q2 record `shouldBe` raiders
+      TeammateRecord.teams Quarter.Q3 record `shouldBe` dolphins
+      TeammateRecord.teams Quarter.Q4 record `shouldBe` chefs
+  describe "withDefaultTeam" $ do
+    it "returns a teammate record with a default team of \"None\" for any quarter with no teams" $ do
+      let blank = Teams.make []
+          none = Teams.make ["None"]
+          record = TeammateRecord.T 1 "123" "Bob" "Sports" blank blank blank blank
+       in TeammateRecord.withDefaultTeam record
+            `shouldBe` TeammateRecord.T 1 "123" "Bob" "Sports" none none none none
+    it "leaves the teams for a quarter alone if they are not empty" $ do
+      let rams = Teams.make ["Rams"]
+          record = TeammateRecord.T 1 "123" "Bob" "Sports" rams rams rams rams
+       in TeammateRecord.withDefaultTeam record
+            `shouldBe` TeammateRecord.T 1 "123" "Bob" "Sports" rams rams rams rams
   CommonSpecs.eqSpec
     (TeammateRecord.T 0 "A" "B" "C" teams teams teams teams)
     (TeammateRecord.T 1 "A" "B" "C" teams teams teams teams)

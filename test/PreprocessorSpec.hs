@@ -12,6 +12,20 @@ import Test.Hspec
 spec :: Spec
 spec = do
   describe "preprocess" $ do
+    it "adds a default team to any teammate who is not on a team" $ do
+      let blank = Teams.make []
+          none = Teams.make ["None"]
+          rams = Teams.make ["Rams"]
+          teammate1 = TeammateRecord.T 2 "Bob" "123" "Sports" blank blank blank blank
+          teammate2 = TeammateRecord.T 3 "Rob" "124" "Sports" rams rams rams rams
+          records = BudgetRecords.T [] [] [teammate1, teammate2]
+       in Preprocessor.preprocess records
+            `shouldBe` BudgetRecords.T
+              []
+              []
+              [ TeammateRecord.T 2 "Bob" "123" "Sports" none none none none,
+                TeammateRecord.T 3 "Rob" "124" "Sports" rams rams rams rams
+              ]
     it "adds line numbers to priorities" $ do
       let priority1 = PriorityRecord.T 0 "Rams" "P1" "P2" "P3" "P4"
           priority2 = PriorityRecord.T (-1) "Goats" "P1" "P2" "P3" "P4"
