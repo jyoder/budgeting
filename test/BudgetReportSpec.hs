@@ -19,7 +19,7 @@ spec = do
     it "returns a budget reports in CSV format" $ do
       let budgetReport = BudgetReport.T [BudgetReport.Row "P" 1000000.00 2000000.00 0.00 0.00]
        in BudgetReport.toCsv budgetReport
-            `shouldBe` "Priority,Spend Q1,Spend Q2,Spend Q3,Spend Q4\r\nP,1.00,2.00,0.00,0.00\r\n"
+            `shouldBe` "Priority,Spend Q1,Spend Q2,Spend Q3,Spend Q4,Spend FY\r\nP,1.00,2.00,0.00,0.00,3.00\r\n"
   CommonSpecs.showSpec
     (BudgetReport.T [BudgetReport.Row "P" 1.00 2.00 3.00 4.00])
     "T [Row {priority = T \"P\", spendQ1 = T 1.0, spendQ2 = T 2.0, spendQ3 = T 3.0, spendQ4 = T 4.0}]"

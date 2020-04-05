@@ -129,7 +129,7 @@ spec = do
                 (Path.fromText "teammates.csv", Result.success teammatesData)
               ]
           (_, system') = StateActions.run (Application.run StateActions.make) system
-       in MockSystem.printed system' `shouldBe` ["Priority,Spend Q1,Spend Q2,Spend Q3,Spend Q4\r\nFootball,0.06,0.00,0.13,0.00\r\nPing Pong,0.00,0.00,0.00,0.17\r\nSoccer,0.00,0.09,0.00,0.00\r\n"]
+       in MockSystem.printed system' `shouldBe` ["Priority,Spend Q1,Spend Q2,Spend Q3,Spend Q4,Spend FY\r\nFootball,0.06,0.00,0.13,0.00,0.19\r\nPing Pong,0.00,0.00,0.00,0.17,0.17\r\nSoccer,0.00,0.09,0.00,0.00,0.09\r\n"]
     it "applies some preprocessing to ensure the data is in a normalized form" $ do
       let teammatesData = "Bhc,Name,Department,Teams Q1,Teams Q2,Teams Q3,Teams Q4\n123,Bob,Sports,,,,"
           prioritiesData = "Name,Priority Q1,Priority Q2,Priority Q3,Priority Q4\nNone,Overhead,Overhead,Overhead,Overhead"
@@ -142,4 +142,4 @@ spec = do
                 (Path.fromText "teammates.csv", Result.success teammatesData)
               ]
           (_, system') = StateActions.run (Application.run StateActions.make) system
-       in MockSystem.printed system' `shouldBe` ["Priority,Spend Q1,Spend Q2,Spend Q3,Spend Q4\r\nOverhead,0.06,0.09,0.13,0.17\r\n"]
+       in MockSystem.printed system' `shouldBe` ["Priority,Spend Q1,Spend Q2,Spend Q3,Spend Q4,Spend FY\r\nOverhead,0.06,0.09,0.13,0.17,0.45\r\n"]
