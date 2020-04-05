@@ -30,10 +30,11 @@ run' actions = do
   arguments <- lift $ Actions.getArguments actions
   fileConfig <- E.liftEither $ parseArguments arguments
   records <- loadBudgetRecords (Actions.read actions) fileConfig
-  let errors = Validator.validate $ Preprocessor.preprocess records
+  let preprocessed = Preprocessor.preprocess records
+  let errors = Validator.validate preprocessed
   if null errors
     then
-      let report = ReportGenerator.generate CostCalculator.cost records
+      let report = ReportGenerator.generate CostCalculator.cost preprocessed
        in lift $ Actions.print actions $ BudgetReport.toCsv report
     else lift $ Actions.print actions $ Data.Text.unlines (map ValidationError.toText errors)
 
