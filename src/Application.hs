@@ -20,6 +20,8 @@ import qualified Validator
 
 type App m a = E.ExceptT Error.T m a
 
+data Command = Budget | Ratios
+
 run :: Monad m => Actions.T m -> m ()
 run actions = do
   result <- runExceptT (run' actions)
@@ -36,37 +38,19 @@ run' actions = do
     then runCommand actions preprocessedRecords command
     else printErrors actions errors
 
-runCommand :: Monad m => Actions.T m -> BudgetRecords.T -> Text -> App m ()
-runCommand actions budgetRecords command =
-  case command of
-    "budget" -> runBudgetCommand actions budgetRecords
-    "ratios" -> runRatiosCommand actions budgetRecords
-    _ -> lift $ Actions.print actions "Unknown command"
-
-runBudgetCommand :: Monad m => Actions.T m -> BudgetRecords.T -> App m ()
-runBudgetCommand actions budgetRecords =
-  let report = ReportGenerator.generate CostCalculator.cost budgetRecords
-   in lift $ Actions.print actions $ BudgetReport.toCsv report
-
-runRatiosCommand :: Monad m => Actions.T m -> BudgetRecords.T -> App m ()
-runRatiosCommand actions _ = lift $ Actions.print actions "Ratios Under Construction"
-
-printErrors :: Monad m => Actions.T m -> [ValidationError.T] -> App m ()
-printErrors actions errors =
-  lift $ Actions.print actions $ Data.Text.unlines (map ValidationError.toText errors)
-
-parseArguments :: [Argument.T] -> Result.T (Text, FileConfig.T)
+parseArguments :: [Argument.T] -> Result.T (Command, FileConfig.T)
 parseArguments [arg1, arg2, arg3, arg4] =
   let command = Argument.toText arg1
       priorityPath = argumentToPath arg2
       salaryPath = argumentToPath arg3
       teammatePath = argumentToPath arg4
-   in Result.success (command, FileConfig.T priorityPath salaryPath teammatePath)
+      fileConfig = FileConfig.T priorityPath salaryPath teammatePath
+   in case command of
+        "budget" -> Result.success (Budget, fileConfig)
+        "ratios" -> Result.success (Ratios, fileConfig)
+        _ -> Result.error usageMessage
 parseArguments _ =
-  Result.error "Usage: ./budgeting-exe <budget|ratios> <priorities-csv> <salaries-csv> <teammates-csv>"
-
-argumentToPath :: Argument.T -> Path.T
-argumentToPath = Path.fromText . Argument.toText
+  Result.error usageMessage
 
 loadBudgetRecords :: Monad m => (Path.T -> App m Text) -> FileConfig.T -> App m BudgetRecords.T
 loadBudgetRecords read FileConfig.T {FileConfig.prioritiesFile, FileConfig.salariesFile, FileConfig.teammatesFile} = do
@@ -81,3 +65,27 @@ loadRecords read filePath = do
   E.liftEither $ either prependPath Result.success (Csv.decode csvData)
   where
     prependPath = Result.prepend $ Path.toText filePath <> ": "
+
+runCommand :: Monad m => Actions.T m -> BudgetRecords.T -> Command -> App m ()
+runCommand actions budgetRecords command =
+  case command of
+    Budget -> runBudgetCommand actions budgetRecords
+    Ratios -> runRatiosCommand actions budgetRecords
+
+runBudgetCommand :: Monad m => Actions.T m -> BudgetRecords.T -> App m ()
+runBudgetCommand actions budgetRecords =
+  let report = ReportGenerator.generate CostCalculator.cost budgetRecords
+   in lift $ Actions.print actions $ BudgetReport.toCsv report
+
+runRatiosCommand :: Monad m => Actions.T m -> BudgetRecords.T -> App m ()
+runRatiosCommand actions _ = lift $ Actions.print actions "Ratios Under Construction"
+
+printErrors :: Monad m => Actions.T m -> [ValidationError.T] -> App m ()
+printErrors actions errors =
+  lift $ Actions.print actions $ Data.Text.unlines (map ValidationError.toText errors)
+
+argumentToPath :: Argument.T -> Path.T
+argumentToPath = Path.fromText . Argument.toText
+
+usageMessage :: Text
+usageMessage = "Usage: ./budgeting-exe <budget|ratios> <priorities-csv> <salaries-csv> <teammates-csv>"
