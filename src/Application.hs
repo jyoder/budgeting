@@ -28,15 +28,32 @@ run actions = do
 run' :: Monad m => Actions.T m -> App m ()
 run' actions = do
   arguments <- lift $ Actions.getArguments actions
-  (_, fileConfig) <- E.liftEither $ parseArguments arguments
+  (command, fileConfig) <- E.liftEither $ parseArguments arguments
   records <- loadBudgetRecords (Actions.read actions) fileConfig
-  let preprocessed = Preprocessor.preprocess records
-  let errors = Validator.validate preprocessed
+  let preprocessedRecords = Preprocessor.preprocess records
+  let errors = Validator.validate preprocessedRecords
   if null errors
-    then
-      let report = ReportGenerator.generate CostCalculator.cost preprocessed
-       in lift $ Actions.print actions $ BudgetReport.toCsv report
-    else lift $ Actions.print actions $ Data.Text.unlines (map ValidationError.toText errors)
+    then runCommand actions preprocessedRecords command
+    else printErrors actions errors
+
+runCommand :: Monad m => Actions.T m -> BudgetRecords.T -> Text -> App m ()
+runCommand actions budgetRecords command =
+  case command of
+    "budget" -> runBudgetCommand actions budgetRecords
+    "ratios" -> runRatiosCommand actions budgetRecords
+    _ -> lift $ Actions.print actions "Unknown command"
+
+runBudgetCommand :: Monad m => Actions.T m -> BudgetRecords.T -> App m ()
+runBudgetCommand actions budgetRecords =
+  let report = ReportGenerator.generate CostCalculator.cost budgetRecords
+   in lift $ Actions.print actions $ BudgetReport.toCsv report
+
+runRatiosCommand :: Monad m => Actions.T m -> BudgetRecords.T -> App m ()
+runRatiosCommand actions _ = lift $ Actions.print actions "Ratios Under Construction"
+
+printErrors :: Monad m => Actions.T m -> [ValidationError.T] -> App m ()
+printErrors actions errors =
+  lift $ Actions.print actions $ Data.Text.unlines (map ValidationError.toText errors)
 
 parseArguments :: [Argument.T] -> Result.T (Text, FileConfig.T)
 parseArguments [arg1, arg2, arg3, arg4] =
