@@ -28,7 +28,7 @@ run actions = do
 run' :: Monad m => Actions.T m -> App m ()
 run' actions = do
   arguments <- lift $ Actions.getArguments actions
-  fileConfig <- E.liftEither $ parseArguments arguments
+  (_, fileConfig) <- E.liftEither $ parseArguments arguments
   records <- loadBudgetRecords (Actions.read actions) fileConfig
   let preprocessed = Preprocessor.preprocess records
   let errors = Validator.validate preprocessed
@@ -38,12 +38,15 @@ run' actions = do
        in lift $ Actions.print actions $ BudgetReport.toCsv report
     else lift $ Actions.print actions $ Data.Text.unlines (map ValidationError.toText errors)
 
-parseArguments :: [Argument.T] -> Result.T FileConfig.T
-parseArguments arguments = case argumentToPath <$> arguments of
-  [priorityPath, salaryPath, teammatePath] ->
-    Result.success $ FileConfig.T priorityPath salaryPath teammatePath
-  _ ->
-    Result.error "Usage: ./budgeting-exe <priorities-csv> <salaries-csv> <teammates-csv>"
+parseArguments :: [Argument.T] -> Result.T (Text, FileConfig.T)
+parseArguments [arg1, arg2, arg3, arg4] =
+  let command = Argument.toText arg1
+      priorityPath = argumentToPath arg2
+      salaryPath = argumentToPath arg3
+      teammatePath = argumentToPath arg4
+   in Result.success (command, FileConfig.T priorityPath salaryPath teammatePath)
+parseArguments _ =
+  Result.error "Usage: ./budgeting-exe <budget|ratios> <priorities-csv> <salaries-csv> <teammates-csv>"
 
 argumentToPath :: Argument.T -> Path.T
 argumentToPath = Path.fromText . Argument.toText
