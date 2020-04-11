@@ -4,6 +4,7 @@ import qualified Actions
 import qualified Argument
 import qualified BudgetRecords
 import qualified BudgetReport
+import qualified BudgetReportGenerator
 import qualified Control.Monad.Except as E
 import qualified CostCalculator
 import qualified Csv
@@ -14,7 +15,6 @@ import qualified Path
 import qualified Preprocessor
 import Protolude
 import qualified RatioReport
-import qualified ReportGenerator
 import qualified Result
 import qualified ValidationError
 import qualified Validator
@@ -75,7 +75,7 @@ runCommand actions budgetRecords command =
 
 runBudgetCommand :: Monad m => Actions.T m -> BudgetRecords.T -> App m ()
 runBudgetCommand actions budgetRecords =
-  let report = ReportGenerator.generate CostCalculator.cost budgetRecords
+  let report = BudgetReportGenerator.generate CostCalculator.cost budgetRecords
    in lift $ Actions.print actions $ BudgetReport.toCsv report
 
 runRatiosCommand :: Monad m => Actions.T m -> BudgetRecords.T -> App m ()

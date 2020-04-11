@@ -1,4 +1,4 @@
-module ReportGenerator (generate) where
+module BudgetReportGenerator (generate) where
 
 import qualified Bhc
 import qualified BudgetRecords
