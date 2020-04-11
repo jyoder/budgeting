@@ -1,4 +1,4 @@
-module Function (T, toText) where
+module Role (T, toText) where
 
 import qualified Data.Csv
 import Protolude

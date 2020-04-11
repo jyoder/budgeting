@@ -119,7 +119,7 @@ spec = do
        in MockSystem.printed system' `shouldBe` ["Missing BHC \"123\" in teammates file, found on line 2 in salaries file\n"]
   describe "run (budget)" $ do
     it "prints a budget report when data passes validation" $ do
-      let teammatesData = "Bhc,Name,Department,Function,Teams Q1,Teams Q2,Teams Q3,Teams Q4\n123,Bob,Sports,Player,Rams,Rams,Rams,Rams"
+      let teammatesData = "Bhc,Name,Department,Role,Teams Q1,Teams Q2,Teams Q3,Teams Q4\n123,Bob,Sports,Player,Rams,Rams,Rams,Rams"
           prioritiesData = "Name,Priority Q1,Priority Q2,Priority Q3,Priority Q4\nRams,Football,Soccer,Football,Ping Pong"
           salariesData = "Bhc,Name,Salary Q1,Salary Q2,Salary Q3,Salary Q4\n123,Bob,100000,200000,300000,400000"
           system =
@@ -132,7 +132,7 @@ spec = do
           (_, system') = StateActions.run (Application.run StateActions.make) system
        in MockSystem.printed system' `shouldBe` ["Priority,Spend Q1,Spend Q2,Spend Q3,Spend Q4,Spend FY\r\nFootball,0.06,0.00,0.13,0.00,0.19\r\nPing Pong,0.00,0.00,0.00,0.17,0.17\r\nSoccer,0.00,0.09,0.00,0.00,0.09\r\n"]
     it "applies some preprocessing to ensure the data is in a normalized form" $ do
-      let teammatesData = "Bhc,Name,Department,Function,Teams Q1,Teams Q2,Teams Q3,Teams Q4\n123,Bob,Sports,Player,,,,"
+      let teammatesData = "Bhc,Name,Department,Role,Teams Q1,Teams Q2,Teams Q3,Teams Q4\n123,Bob,Sports,Player,,,,"
           prioritiesData = "Name,Priority Q1,Priority Q2,Priority Q3,Priority Q4\nNone,Overhead,Overhead,Overhead,Overhead"
           salariesData = "Bhc,Name,Salary Q1,Salary Q2,Salary Q3,Salary Q4\n123,Bob,100000,200000,300000,400000"
           system =
@@ -146,7 +146,7 @@ spec = do
        in MockSystem.printed system' `shouldBe` ["Priority,Spend Q1,Spend Q2,Spend Q3,Spend Q4,Spend FY\r\nOverhead,0.06,0.09,0.13,0.17,0.45\r\n"]
   describe "run (ratios)" $ do
     it "prints a ratio report when data passes validation" $ do
-      let teammatesData = "Bhc,Name,Department,Function,Teams Q1,Teams Q2,Teams Q3,Teams Q4\n123,Bob,Sports,Player,Rams,Rams,Rams,Rams"
+      let teammatesData = "Bhc,Name,Department,Role,Teams Q1,Teams Q2,Teams Q3,Teams Q4\n123,Bob,Sports,Player,Rams,Rams,Rams,Rams"
           prioritiesData = "Name,Priority Q1,Priority Q2,Priority Q3,Priority Q4\nRams,Football,Soccer,Football,Ping Pong"
           salariesData = "Bhc,Name,Salary Q1,Salary Q2,Salary Q3,Salary Q4\n123,Bob,100000,200000,300000,400000"
           system =

@@ -4,11 +4,11 @@ import qualified Bhc
 import Data.Csv ((.:))
 import qualified Data.Csv
 import qualified Department
-import qualified Function
 import qualified LineNumber
 import qualified Name
 import Protolude
 import qualified Quarter
+import qualified Role
 import qualified Team
 import qualified Teams
 
@@ -18,7 +18,7 @@ data T
         bhc :: !Bhc.T,
         name :: !Name.T,
         department :: !Department.T,
-        function :: !Function.T,
+        function :: !Role.T,
         teamsQ1 :: !Teams.T,
         teamsQ2 :: !Teams.T,
         teamsQ3 :: !Teams.T,
@@ -33,7 +33,7 @@ instance Data.Csv.FromNamedRecord T where
       <*> m .: "Bhc"
       <*> m .: "Name"
       <*> m .: "Department"
-      <*> m .: "Function"
+      <*> m .: "Role"
       <*> m .: "Teams Q1"
       <*> m .: "Teams Q2"
       <*> m .: "Teams Q3"
