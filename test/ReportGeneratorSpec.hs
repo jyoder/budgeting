@@ -17,7 +17,7 @@ spec = do
       let rams = Teams.make ["Rams"]
           ramsPriority = PriorityRecord.T 1 "Rams" "Football" "Football" "Football" "Football"
           bobSalary = SalaryRecord.T 1 "10" "Bob" 100.00 200.00 300.00 400.00
-          bobTeammate = TeammateRecord.T 1 "10" "Bob" "Sports" rams rams rams rams
+          bobTeammate = TeammateRecord.T 1 "10" "Bob" "Sports" "Player" rams rams rams rams
           records = BudgetRecords.T [ramsPriority] [bobSalary] [bobTeammate]
        in ReportGenerator.generate identity records
             `shouldBe` BudgetReport.T [BudgetReport.Row "Football" 100.00 200.00 300.00 400.00]
@@ -26,8 +26,8 @@ spec = do
           ramsPriority = PriorityRecord.T 1 "Rams" "Football" "Football" "Football" "Football"
           bobSalary = SalaryRecord.T 1 "10" "Bob" 100.00 200.00 300.00 400.00
           robSalary = SalaryRecord.T 2 "11" "Rob" 50.00 200.00 300.00 400.00
-          bobTeammate = TeammateRecord.T 1 "10" "Bob" "Sports" rams rams rams rams
-          robTeammate = TeammateRecord.T 2 "11" "Rob" "Sports" rams rams rams rams
+          bobTeammate = TeammateRecord.T 1 "10" "Bob" "Sports" "Player" rams rams rams rams
+          robTeammate = TeammateRecord.T 2 "11" "Rob" "Sports" "Player" rams rams rams rams
           records = BudgetRecords.T [ramsPriority] [bobSalary, robSalary] [bobTeammate, robTeammate]
        in ReportGenerator.generate identity records
             `shouldBe` BudgetReport.T [BudgetReport.Row "Football" 150.00 400.00 600.00 800.00]
@@ -36,8 +36,8 @@ spec = do
           ramsPriority = PriorityRecord.T 1 "Rams" "Football" "Football" "Football" "Football"
           bobSalary = SalaryRecord.T 1 "10" "Bob" 100.00 200.00 300.00 400.00
           robSalary = SalaryRecord.T 2 "11" "Rob" 0.00 200.00 300.00 400.00
-          bobTeammate = TeammateRecord.T 1 "10" "Bob" "Sports" rams rams rams rams
-          robTeammate = TeammateRecord.T 2 "11" "Rob" "Sports" rams rams rams rams
+          bobTeammate = TeammateRecord.T 1 "10" "Bob" "Sports" "Player" rams rams rams rams
+          robTeammate = TeammateRecord.T 2 "11" "Rob" "Sports" "Player" rams rams rams rams
           records = BudgetRecords.T [ramsPriority] [bobSalary, robSalary] [bobTeammate, robTeammate]
        in ReportGenerator.generate identity records
             `shouldBe` BudgetReport.T [BudgetReport.Row "Football" 100.00 400.00 600.00 800.00]
@@ -47,8 +47,8 @@ spec = do
           canucksPriority = PriorityRecord.T 1 "Canucks" "Hockey" "Hockey" "Hockey" "Hockey"
           bobSalary = SalaryRecord.T 1 "10" "Bob" 100.00 200.00 300.00 400.00
           robSalary = SalaryRecord.T 2 "11" "Rob" 50.00 200.00 300.00 400.00
-          bobTeammate = TeammateRecord.T 1 "10" "Bob" "Sports" rams rams rams rams
-          robTeammate = TeammateRecord.T 2 "11" "Rob" "Sports" canucks rams rams rams
+          bobTeammate = TeammateRecord.T 1 "10" "Bob" "Sports" "Player" rams rams rams rams
+          robTeammate = TeammateRecord.T 2 "11" "Rob" "Sports" "Player" canucks rams rams rams
           records = BudgetRecords.T [ramsPriority, canucksPriority] [bobSalary, robSalary] [bobTeammate, robTeammate]
        in ReportGenerator.generate identity records
             `shouldBe` BudgetReport.T
@@ -62,9 +62,9 @@ spec = do
           bobSalary = SalaryRecord.T 1 "10" "Bob" 100.00 200.00 300.00 400.00
           robSalary = SalaryRecord.T 2 "11" "Rob" 50.00 200.00 300.00 400.00
           nobSalary = SalaryRecord.T 3 "12" "Nob" 1.00 2.00 3.00 4.00
-          bobTeammate = TeammateRecord.T 1 "10" "Bob" "Sports" rams rams rams rams
-          robTeammate = TeammateRecord.T 2 "11" "Rob" "Sports" canucks rams rams rams
-          nobTeammate = TeammateRecord.T 3 "12" "Nob" "Sports" rams rams rams rams
+          bobTeammate = TeammateRecord.T 1 "10" "Bob" "Sports" "Player" rams rams rams rams
+          robTeammate = TeammateRecord.T 2 "11" "Rob" "Sports" "Player" canucks rams rams rams
+          nobTeammate = TeammateRecord.T 3 "12" "Nob" "Sports" "Player" rams rams rams rams
           records =
             BudgetRecords.T
               [ramsPriority, canucksPriority]
@@ -80,7 +80,7 @@ spec = do
           ramsPriority = PriorityRecord.T 1 "Rams" "Football" "Football" "Football" "Football"
           canucksPriority = PriorityRecord.T 1 "Canucks" "Hockey" "Hockey" "Hockey" "Hockey"
           bobSalary = SalaryRecord.T 1 "10" "Bob" 100.00 200.00 300.00 400.00
-          bobTeammate = TeammateRecord.T 2 "10" "Bob" "Sports" ramsCanucks rams rams rams
+          bobTeammate = TeammateRecord.T 2 "10" "Bob" "Sports" "Player" ramsCanucks rams rams rams
           records = BudgetRecords.T [ramsPriority, canucksPriority] [bobSalary] [bobTeammate]
        in ReportGenerator.generate identity records
             `shouldBe` BudgetReport.T
@@ -92,7 +92,7 @@ spec = do
           ramsPriority = PriorityRecord.T 2 "Rams" "Football" "Football" "Football" "Football"
           canucksPriority = PriorityRecord.T 1 "Canucks" "Hockey" "Hockey" "Hockey" "Hockey"
           bobSalary = SalaryRecord.T 1 "10" "Bob" 100.00 200.00 300.00 400.00
-          bobTeammate = TeammateRecord.T 1 "10" "Bob" "Sports" ramsCanucks rams rams rams
+          bobTeammate = TeammateRecord.T 1 "10" "Bob" "Sports" "Player" ramsCanucks rams rams rams
           records1 = BudgetRecords.T [ramsPriority, canucksPriority] [bobSalary] [bobTeammate]
           records2 = BudgetRecords.T [canucksPriority, ramsPriority] [bobSalary] [bobTeammate]
        in [ReportGenerator.generate identity records1, ReportGenerator.generate identity records2]
@@ -110,9 +110,9 @@ spec = do
           rams = Teams.make ["Rams"]
           ramsPriority = PriorityRecord.T 1 "Rams" "Football" "Football" "Football" "Football"
           bobSalary = SalaryRecord.T 1 "10" "Bob" 100.00 200.00 300.00 400.00
-          bobTeammate = TeammateRecord.T 1 "10" "Bob" "Sports" rams rams rams rams
+          bobTeammate = TeammateRecord.T 1 "10" "Bob" "Sports" "Player" rams rams rams rams
           robSalary = SalaryRecord.T 1 "11" "Rob" 100.00 200.00 300.00 400.00
-          robTeammate = TeammateRecord.T 1 "11" "Rob" "Sports" rams rams rams rams
+          robTeammate = TeammateRecord.T 1 "11" "Rob" "Sports" "Player" rams rams rams rams
           records = BudgetRecords.T [ramsPriority] [bobSalary, robSalary] [bobTeammate, robTeammate]
        in ReportGenerator.generate cost records
             `shouldBe` BudgetReport.T [BudgetReport.Row "Football" 1600.00 2000.00 2400.00 2800.00]

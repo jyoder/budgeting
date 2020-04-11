@@ -16,15 +16,15 @@ spec = do
       let blank = Teams.make []
           none = Teams.make ["None"]
           rams = Teams.make ["Rams"]
-          teammate1 = TeammateRecord.T 2 "Bob" "123" "Sports" blank blank blank blank
-          teammate2 = TeammateRecord.T 3 "Rob" "124" "Sports" rams rams rams rams
+          teammate1 = TeammateRecord.T 2 "Bob" "123" "Sports" "Player" blank blank blank blank
+          teammate2 = TeammateRecord.T 3 "Rob" "124" "Sports" "Player" rams rams rams rams
           records = BudgetRecords.T [] [] [teammate1, teammate2]
        in Preprocessor.preprocess records
             `shouldBe` BudgetRecords.T
               []
               []
-              [ TeammateRecord.T 2 "Bob" "123" "Sports" none none none none,
-                TeammateRecord.T 3 "Rob" "124" "Sports" rams rams rams rams
+              [ TeammateRecord.T 2 "Bob" "123" "Sports" "Player" none none none none,
+                TeammateRecord.T 3 "Rob" "124" "Sports" "Player" rams rams rams rams
               ]
     it "adds line numbers to priorities" $ do
       let priority1 = PriorityRecord.T 0 "Rams" "P1" "P2" "P3" "P4"
@@ -50,35 +50,35 @@ spec = do
               []
     it "adds line numbers to teammates" $ do
       let rams = Teams.make ["Rams"]
-          teammate1 = TeammateRecord.T 0 "Bob" "123" "Sports" rams rams rams rams
-          teammate2 = TeammateRecord.T (-1) "Rob" "124" "Sports" rams rams rams rams
+          teammate1 = TeammateRecord.T 0 "Bob" "123" "Sports" "Player" rams rams rams rams
+          teammate2 = TeammateRecord.T (-1) "Rob" "124" "Sports" "Player" rams rams rams rams
           records = BudgetRecords.T [] [] [teammate1, teammate2]
        in Preprocessor.preprocess records
             `shouldBe` BudgetRecords.T
               []
               []
-              [ TeammateRecord.T 2 "Bob" "123" "Sports" rams rams rams rams,
-                TeammateRecord.T 3 "Rob" "124" "Sports" rams rams rams rams
+              [ TeammateRecord.T 2 "Bob" "123" "Sports" "Player" rams rams rams rams,
+                TeammateRecord.T 3 "Rob" "124" "Sports" "Player" rams rams rams rams
               ]
     it "removes teammates who are in the \"Web Operations\" department" $ do
       let rams = Teams.make ["Rams"]
-          teammate1 = TeammateRecord.T 0 "Bob" "123" "Web Operations" rams rams rams rams
-          teammate2 = TeammateRecord.T (-1) "Rob" "124" "Sports" rams rams rams rams
+          teammate1 = TeammateRecord.T 0 "Bob" "123" "Web Operations" "Player" rams rams rams rams
+          teammate2 = TeammateRecord.T (-1) "Rob" "124" "Sports" "Player" rams rams rams rams
           records = BudgetRecords.T [] [] [teammate1, teammate2]
        in Preprocessor.preprocess records
             `shouldBe` BudgetRecords.T
               []
               []
-              [ TeammateRecord.T 3 "Rob" "124" "Sports" rams rams rams rams
+              [ TeammateRecord.T 3 "Rob" "124" "Sports" "Player" rams rams rams rams
               ]
     it "removes teammates who are in the \"Web Operations\" department" $ do
       let rams = Teams.make ["Rams"]
-          teammate1 = TeammateRecord.T 0 "Bob" "123" "Security" rams rams rams rams
-          teammate2 = TeammateRecord.T (-1) "Rob" "124" "Sports" rams rams rams rams
+          teammate1 = TeammateRecord.T 0 "Bob" "123" "Security" "Player" rams rams rams rams
+          teammate2 = TeammateRecord.T (-1) "Rob" "124" "Sports" "Player" rams rams rams rams
           records = BudgetRecords.T [] [] [teammate1, teammate2]
        in Preprocessor.preprocess records
             `shouldBe` BudgetRecords.T
               []
               []
-              [ TeammateRecord.T 3 "Rob" "124" "Sports" rams rams rams rams
+              [ TeammateRecord.T 3 "Rob" "124" "Sports" "Player" rams rams rams rams
               ]
