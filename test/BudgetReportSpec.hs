@@ -16,7 +16,7 @@ spec = do
       BudgetReport.spendQ3 row `shouldBe` 3.00
       BudgetReport.spendQ4 row `shouldBe` 4.00
   describe "toCsv" $ do
-    it "returns a budget reports in CSV format" $ do
+    it "returns a budget report in CSV format" $ do
       let budgetReport = BudgetReport.T [BudgetReport.Row "P" 1000000.00 2000000.00 0.00 0.00]
        in BudgetReport.toCsv budgetReport
             `shouldBe` "Priority,Spend Q1,Spend Q2,Spend Q3,Spend Q4,Spend FY\r\nP,1.00,2.00,0.00,0.00,3.00\r\n"

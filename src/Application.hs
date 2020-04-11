@@ -13,6 +13,7 @@ import qualified FileConfig
 import qualified Path
 import qualified Preprocessor
 import Protolude
+import qualified RatioReport
 import qualified ReportGenerator
 import qualified Result
 import qualified ValidationError
@@ -78,7 +79,7 @@ runBudgetCommand actions budgetRecords =
    in lift $ Actions.print actions $ BudgetReport.toCsv report
 
 runRatiosCommand :: Monad m => Actions.T m -> BudgetRecords.T -> App m ()
-runRatiosCommand actions _ = lift $ Actions.print actions "Ratios Under Construction"
+runRatiosCommand actions _ = lift $ Actions.print actions (RatioReport.toCsv $ RatioReport.T [RatioReport.Row "UX" 2.0 2.0 2.0 2.0])
 
 printErrors :: Monad m => Actions.T m -> [ValidationError.T] -> App m ()
 printErrors actions errors =
