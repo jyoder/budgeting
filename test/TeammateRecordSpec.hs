@@ -19,6 +19,7 @@ spec = do
       TeammateRecord.bhc record `shouldBe` "123"
       TeammateRecord.name record `shouldBe` "Bob Bobberson"
       TeammateRecord.department record `shouldBe` "Sports"
+      TeammateRecord.role record `shouldBe` "Player"
       TeammateRecord.teamsQ1 record `shouldBe` rams
       TeammateRecord.teamsQ2 record `shouldBe` raiders
       TeammateRecord.teamsQ3 record `shouldBe` rams

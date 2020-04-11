@@ -18,7 +18,7 @@ data T
         bhc :: !Bhc.T,
         name :: !Name.T,
         department :: !Department.T,
-        function :: !Role.T,
+        role :: !Role.T,
         teamsQ1 :: !Teams.T,
         teamsQ2 :: !Teams.T,
         teamsQ3 :: !Teams.T,
