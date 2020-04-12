@@ -136,7 +136,8 @@ The `Bhc` column contains the _Budgeted Headcount_ ID for each person. This is a
 BHC that shows up in the teammates file _must_ have a corresponding entry in the salaries file.
 
 In the teams columns, it is possible to specify that a person is on multiple teams. In this case, teams should be enclosed in
-quotes and separated by commas.
+quotes and separated by commas. Each team in the teams columns _must_ have a corresponding entry in the priorities file,
+otherwise data validations will fail.
 
 In the example above, no teams were specified for `Amy Amerson` in Q4. By default, she will be assigned to a special team
 called `None` to ensure her cost is always accounted for. In this case, the `None` team _must_ appear in the priorities file,
