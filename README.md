@@ -17,6 +17,9 @@ splitting it based on the number of teams they are assigned to) add some constan
 software licenses and team events) and then we scale this amount to account for costs that grow with base salary such as a
 401K plan.
 
+You can manually change the constants used in the cost calculation by updating the values directly in `CostCalculator.hs`. In
+the future, we may make these values configurable via the command line or separate file.
+
 The report is printed to `stdout` in CSV format. The report has the following structure:
 
 | Priority | Spend Q1 | Spend Q2 | Spend Q3 | Spend Q4 |
@@ -82,3 +85,60 @@ second argument is the `priorities-file`. This file contains a list of teams and
 quarter of the year. The third argument is the `salaries-file`. This contains salary information for each person in the
 organization. The fourth argument is the `teammates-file`. This contains the list of people in the organization and which
 teams they are assigned to each quarter. More details on the format of these files can be found in the following sections.
+
+# Input Files
+
+All input files use the CSV format. This section describes the required structure of each input file and how fields in these
+files are related to one another.
+
+## Priorities File
+
+This file contains a list of teams and which priorities they are assigned to each quarter of the year. It has the following
+structure:
+
+| Team        | Priority Q1    | Priority Q2    | Priority Q3    | Priority Q4    |
+|-------------|----------------|----------------|----------------|----------------|
+| Goobers     | Infrastructure | Security       | Gumballs       | Communication  |
+| Hex Pistols | Communication  | Communication  | Infrastructure | Infrastructure |
+| None        | Overhead       | Overhead       | Overhead       | Overhead       |
+
+Every team that appears in the teammates file _must_ have an entry in the priorities file or data validations will fail. The
+`None` team is a special team that teammates will have by default if no team is specified. As such, the priorities file should
+always contain an entry for `None` to ensure that all costs are accounted for.
+
+## Salaries File
+
+This file contains salary information for each person in the organization. It has the following structure:
+
+| Bhc   | Name           | Salary Q1 | Salary Q2  | Salary Q3  | Salary Q4  |
+|-------|----------------|-----------|------------|------------|------------|
+| 100   | Bob Bobberson  | 70000.00  | 75000.00   | 75000.00   | 80000.00   |
+| 2000  | Amy Amerson    | 75000.00  | 75000.00   | 83000.00   | 83000.00   |
+
+Salary numbers for each quarter are specifiec as _yearly salaries_ (they are converted to quarterly salaries internally).
+
+The `Bhc` column contains the _Budgeted Headcount_ ID for each person. This is a unique value used to identify a person. Each
+BHC that shows up in the salaries file _must_ have a corresponding teammate in the teammates file. Data validations will fail
+if any BHCs are duplicated or do not show up in the teammates file. The `Name` column is only used for reference and is
+ignored by validations.
+
+## Teammates File
+
+This file contains the list of people in the organization and which teams they are assigned to each quarter. It has the
+following structure:
+
+| Bhc   | Name           | Teams Q1               | Teams Q2           | Teams Q3           | Teams Q4           |
+|-------|----------------|------------------------|--------------------|--------------------|--------------------|
+| 100   | Bob Bobberson  | "Hex Pistols,Goobers"  | Hex Pistols        | Hex Pistols        | None               |
+| 2000  | Amy Amerson    | Goobers                | Goobers            |                    | Goobers            |
+
+The `Bhc` column contains the _Budgeted Headcount_ ID for each person. This is a unique value used to identify a person. Each
+BHC that shows up in the teammates file _must_ have a corresponding entry in the salaries file.
+
+In the teams columns, it is possible to specify that a person is on multiple teams. In this case, teams should be enclosed in
+quotes and separated by commas.
+
+In the example above, no teams were specified for `Amy Amerson` in Q4. By default, she will be assigned to a special team
+called `None` to ensure her cost is always accounted for. In this case, the `None` team _must_ appear in the priorities file,
+otherwise data validations will fail. It is also possible to assign people to the special `None` team as shown in the case of
+`Bob Bobberson` in Q4. 
