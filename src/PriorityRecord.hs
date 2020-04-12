@@ -23,7 +23,7 @@ instance Data.Csv.FromNamedRecord T where
   parseNamedRecord m =
     T
       <$> pure 0
-      <*> m .: "Name"
+      <*> m .: "Team"
       <*> m .: "Priority Q1"
       <*> m .: "Priority Q2"
       <*> m .: "Priority Q3"

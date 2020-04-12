@@ -42,7 +42,7 @@ spec = do
           (_, system') = StateActions.run (Application.run StateActions.make) system
        in MockSystem.printed system' `shouldBe` ["error reading file"]
     it "prints an error when the salaries file is not found" $ do
-      let prioritiesData = "Name,Priority Q1,Priority Q2,Priority Q3,Priority Q4\nRams,Football,Soccer,Football,Ping Pong"
+      let prioritiesData = "Team,Priority Q1,Priority Q2,Priority Q3,Priority Q4\nRams,Football,Soccer,Football,Ping Pong"
           system =
             MockSystem.make
               (Argument.fromText <$> ["budget", "priorities.csv", "salaries.csv", "teammates.csv"])
@@ -50,7 +50,7 @@ spec = do
           (_, system') = StateActions.run (Application.run StateActions.make) system
        in MockSystem.printed system' `shouldBe` ["File not found: salaries.csv"]
     it "prints an error when the salaries file contains invalid data" $ do
-      let prioritiesData = "Name,Priority Q1,Priority Q2,Priority Q3,Priority Q4\nRams,Football,Soccer,Football,Ping Pong"
+      let prioritiesData = "Team,Priority Q1,Priority Q2,Priority Q3,Priority Q4\nRams,Football,Soccer,Football,Ping Pong"
           system =
             MockSystem.make
               (Argument.fromText <$> ["budget", "priorities.csv", "salaries.csv", "teammates.csv"])
@@ -60,7 +60,7 @@ spec = do
           (_, system') = StateActions.run (Application.run StateActions.make) system
        in MockSystem.printed system' `shouldBe` ["salaries.csv: parse error (not enough input) at \"\""]
     it "prints an error when there is an error reading the salaries file" $ do
-      let prioritiesData = "Name,Priority Q1,Priority Q2,Priority Q3,Priority Q4\nRams,Football,Soccer,Football,Ping Pong"
+      let prioritiesData = "Team,Priority Q1,Priority Q2,Priority Q3,Priority Q4\nRams,Football,Soccer,Football,Ping Pong"
           system =
             MockSystem.make
               (Argument.fromText <$> ["budget", "priorities.csv", "salaries.csv", "teammates.csv"])
@@ -70,7 +70,7 @@ spec = do
           (_, system') = StateActions.run (Application.run StateActions.make) system
        in MockSystem.printed system' `shouldBe` ["error reading file"]
     it "prints an error when the teammates file is not found" $ do
-      let prioritiesData = "Name,Priority Q1,Priority Q2,Priority Q3,Priority Q4\nRams,Football,Soccer,Football,Ping Pong"
+      let prioritiesData = "Team,Priority Q1,Priority Q2,Priority Q3,Priority Q4\nRams,Football,Soccer,Football,Ping Pong"
           salariesData = "Bhc,Name,Salary Q1,Salary Q2,Salary Q3,Salary Q4\n123,Bob,100,110,120,120"
           system =
             MockSystem.make
@@ -81,7 +81,7 @@ spec = do
           (_, system') = StateActions.run (Application.run StateActions.make) system
        in MockSystem.printed system' `shouldBe` ["File not found: teammates.csv"]
     it "prints an error when the teammates file contains invalid data" $ do
-      let prioritiesData = "Name,Priority Q1,Priority Q2,Priority Q3,Priority Q4\nRams,Football,Soccer,Football,Ping Pong"
+      let prioritiesData = "Team,Priority Q1,Priority Q2,Priority Q3,Priority Q4\nRams,Football,Soccer,Football,Ping Pong"
           salariesData = "Bhc,Name,Salary Q1,Salary Q2,Salary Q3,Salary Q4\n123,Bob,100,110,120,120"
           system =
             MockSystem.make
@@ -93,7 +93,7 @@ spec = do
           (_, system') = StateActions.run (Application.run StateActions.make) system
        in MockSystem.printed system' `shouldBe` ["teammates.csv: parse error (not enough input) at \"\""]
     it "prints an error when there is an error reading the teammates file" $ do
-      let prioritiesData = "Name,Priority Q1,Priority Q2,Priority Q3,Priority Q4\nRams,Football,Soccer,Football,Ping Pong"
+      let prioritiesData = "Team,Priority Q1,Priority Q2,Priority Q3,Priority Q4\nRams,Football,Soccer,Football,Ping Pong"
           salariesData = "Bhc,Name,Salary Q1,Salary Q2,Salary Q3,Salary Q4\n123,Bob,100,110,120,120"
           system =
             MockSystem.make
@@ -106,7 +106,7 @@ spec = do
        in MockSystem.printed system' `shouldBe` ["error reading file"]
     it "prints an error when validations fail" $ do
       let teammatesData = "Bhc,Name,Teams Q1,Teams Q2,Teams Q3,Teams Q4\n"
-          prioritiesData = "Name,Priority Q1,Priority Q2,Priority Q3,Priority Q4\nRams,Football,Soccer,Football,Ping Pong"
+          prioritiesData = "Team,Priority Q1,Priority Q2,Priority Q3,Priority Q4\nRams,Football,Soccer,Football,Ping Pong"
           salariesData = "Bhc,Name,Salary Q1,Salary Q2,Salary Q3,Salary Q4\n123,Bob,100,110,120,120"
           system =
             MockSystem.make
@@ -120,7 +120,7 @@ spec = do
   describe "run (budget)" $ do
     it "prints a budget report when data passes validation" $ do
       let teammatesData = "Bhc,Name,Department,Role,Teams Q1,Teams Q2,Teams Q3,Teams Q4\n123,Bob,Sports,Player,Rams,Rams,Rams,Rams"
-          prioritiesData = "Name,Priority Q1,Priority Q2,Priority Q3,Priority Q4\nRams,Football,Soccer,Football,Ping Pong"
+          prioritiesData = "Team,Priority Q1,Priority Q2,Priority Q3,Priority Q4\nRams,Football,Soccer,Football,Ping Pong"
           salariesData = "Bhc,Name,Salary Q1,Salary Q2,Salary Q3,Salary Q4\n123,Bob,100000,200000,300000,400000"
           system =
             MockSystem.make
@@ -133,7 +133,7 @@ spec = do
        in MockSystem.printed system' `shouldBe` ["Priority,Spend Q1,Spend Q2,Spend Q3,Spend Q4,Spend FY\r\nFootball,0.06,0.00,0.13,0.00,0.19\r\nPing Pong,0.00,0.00,0.00,0.17,0.17\r\nSoccer,0.00,0.09,0.00,0.00,0.09\r\n"]
     it "applies some preprocessing to ensure the data is in a normalized form" $ do
       let teammatesData = "Bhc,Name,Department,Role,Teams Q1,Teams Q2,Teams Q3,Teams Q4\n123,Bob,Sports,Player,,,,"
-          prioritiesData = "Name,Priority Q1,Priority Q2,Priority Q3,Priority Q4\nNone,Overhead,Overhead,Overhead,Overhead"
+          prioritiesData = "Team,Priority Q1,Priority Q2,Priority Q3,Priority Q4\nNone,Overhead,Overhead,Overhead,Overhead"
           salariesData = "Bhc,Name,Salary Q1,Salary Q2,Salary Q3,Salary Q4\n123,Bob,100000,200000,300000,400000"
           system =
             MockSystem.make
@@ -147,7 +147,7 @@ spec = do
   describe "run (ratios)" $ do
     it "prints a ratio report when data passes validation" $ do
       let teammatesData = "Bhc,Name,Department,Role,Teams Q1,Teams Q2,Teams Q3,Teams Q4\n123,Bob,Development,Software Engineer,Hex,Hex,Hex,Hex\n124,Rob,Development,Product Manager,Hex,Hex,Hex,Hex\n125,Gob,Development,User Experience Designer,Hex,Hex,Hex,Hex\n126,Nob,Development,Quality Assurance Engineer,Hex,Hex,Hex,Hex"
-          prioritiesData = "Name,Priority Q1,Priority Q2,Priority Q3,Priority Q4\nHex,V+,V+,V+,V+"
+          prioritiesData = "Team,Priority Q1,Priority Q2,Priority Q3,Priority Q4\nHex,V+,V+,V+,V+"
           salariesData = "Bhc,Name,Salary Q1,Salary Q2,Salary Q3,Salary Q4\n123,Bob,100000,200000,300000,400000\n124,Rob,100000,200000,300000,400000\n125,Gob,100000,200000,300000,400000\n126,Nob,100000,200000,300000,400000"
           system =
             MockSystem.make

@@ -21,9 +21,9 @@ spec = do
   describe "decodeByName" $ do
     it "returns a PriorityRecord when all columns are present" $
       do
-        Data.Csv.decodeByName "Name,Priority Q1,Priority Q2,Priority Q3,Priority Q4\n49ers,Football,Soccer,Hockey,Foosball"
+        Data.Csv.decodeByName "Team,Priority Q1,Priority Q2,Priority Q3,Priority Q4\n49ers,Football,Soccer,Hockey,Foosball"
         `shouldBe` Right
-          ( Data.Vector.fromList ["Name", "Priority Q1", "Priority Q2", "Priority Q3", "Priority Q4"],
+          ( Data.Vector.fromList ["Team", "Priority Q1", "Priority Q2", "Priority Q3", "Priority Q4"],
             Data.Vector.fromList [PriorityRecord.T 0 "49ers" "Football" "Soccer" "Hockey" "Foosball"]
           )
   CommonSpecs.eqSpec
