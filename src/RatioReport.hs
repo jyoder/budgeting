@@ -4,12 +4,13 @@ import qualified Csv
 import qualified Data.Csv
 import Data.Csv ((.=))
 import Protolude
+import qualified Role
 
 newtype T = T [Row] deriving (Show, Eq)
 
 data Row
   = Row
-      { role :: !Text,
+      { role :: !Role.T,
         devsPerRoleQ1 :: !Double,
         devsPerRoleQ2 :: !Double,
         devsPerRoleQ3 :: !Double,
