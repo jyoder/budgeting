@@ -146,9 +146,9 @@ spec = do
        in MockSystem.printed system' `shouldBe` ["Priority,Spend Q1,Spend Q2,Spend Q3,Spend Q4,Spend FY\r\nOverhead,0.06,0.09,0.13,0.17,0.45\r\n"]
   describe "run (ratios)" $ do
     it "prints a ratio report when data passes validation" $ do
-      let teammatesData = "Bhc,Name,Department,Role,Teams Q1,Teams Q2,Teams Q3,Teams Q4\n123,Bob,Sports,Player,Rams,Rams,Rams,Rams"
-          prioritiesData = "Name,Priority Q1,Priority Q2,Priority Q3,Priority Q4\nRams,Football,Soccer,Football,Ping Pong"
-          salariesData = "Bhc,Name,Salary Q1,Salary Q2,Salary Q3,Salary Q4\n123,Bob,100000,200000,300000,400000"
+      let teammatesData = "Bhc,Name,Department,Role,Teams Q1,Teams Q2,Teams Q3,Teams Q4\n123,Bob,Development,Software Engineer,Hex,Hex,Hex,Hex\n124,Rob,Development,Product Manager,Hex,Hex,Hex,Hex\n125,Gob,Development,User Experience Designer,Hex,Hex,Hex,Hex\n126,Nob,Development,Quality Assurance Engineer,Hex,Hex,Hex,Hex"
+          prioritiesData = "Name,Priority Q1,Priority Q2,Priority Q3,Priority Q4\nHex,V+,V+,V+,V+"
+          salariesData = "Bhc,Name,Salary Q1,Salary Q2,Salary Q3,Salary Q4\n123,Bob,100000,200000,300000,400000\n124,Rob,100000,200000,300000,400000\n125,Gob,100000,200000,300000,400000\n126,Nob,100000,200000,300000,400000"
           system =
             MockSystem.make
               (Argument.fromText <$> ["ratios", "priorities.csv", "salaries.csv", "teammates.csv"])
@@ -157,4 +157,4 @@ spec = do
                 (Path.fromText "teammates.csv", Result.success teammatesData)
               ]
           (_, system') = StateActions.run (Application.run StateActions.make) system
-       in MockSystem.printed system' `shouldBe` ["Role,Devs Per Role Q1,Devs Per Role Q2,Devs Per Role Q3,Devs Per Role Q4\r\nUX,2.0,2.0,2.0,2.0\r\n"]
+       in MockSystem.printed system' `shouldBe` ["Role,SEs Per Role Q1,SEs Per Role Q2,SEs Per Role Q3,SEs Per Role Q4\r\nProduct Manager,1.0,1.0,1.0,1.0\r\nUser Experience Designer,1.0,1.0,1.0,1.0\r\nQuality Assurance Engineer,1.0,1.0,1.0,1.0\r\n"]

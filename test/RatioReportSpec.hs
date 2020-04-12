@@ -18,7 +18,7 @@ spec = do
   describe "toCsv" $ do
     it "returns a ratio report in CSV format" $ do
       let report = RatioReport.T [RatioReport.Row "UX" 1.0 2.0 3.0 4.0]
-       in RatioReport.toCsv report `shouldBe` "Role,Devs Per Role Q1,Devs Per Role Q2,Devs Per Role Q3,Devs Per Role Q4\r\nUX,1.0,2.0,3.0,4.0\r\n"
+       in RatioReport.toCsv report `shouldBe` "Role,SEs Per Role Q1,SEs Per Role Q2,SEs Per Role Q3,SEs Per Role Q4\r\nUX,1.0,2.0,3.0,4.0\r\n"
   CommonSpecs.showSpec
     (RatioReport.T [RatioReport.Row "UX" 1.0 1.0 1.0 1.0])
     "T [Row {role = T \"UX\", devsPerRoleQ1 = 1.0, devsPerRoleQ2 = 1.0, devsPerRoleQ3 = 1.0, devsPerRoleQ4 = 1.0}]"

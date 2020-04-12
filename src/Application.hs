@@ -15,6 +15,7 @@ import qualified Path
 import qualified Preprocessor
 import Protolude
 import qualified RatioReport
+import qualified RatioReportGenerator
 import qualified Result
 import qualified ValidationError
 import qualified Validator
@@ -54,11 +55,17 @@ parseArguments _ =
   Result.error usageMessage
 
 loadBudgetRecords :: Monad m => (Path.T -> App m Text) -> FileConfig.T -> App m BudgetRecords.T
-loadBudgetRecords read FileConfig.T {FileConfig.prioritiesFile, FileConfig.salariesFile, FileConfig.teammatesFile} = do
-  priorityRecords <- loadRecords read prioritiesFile
-  salaryRecords <- loadRecords read salariesFile
-  teammateRecords <- loadRecords read teammatesFile
-  return $ BudgetRecords.T priorityRecords salaryRecords teammateRecords
+loadBudgetRecords
+  read
+  FileConfig.T
+    { FileConfig.prioritiesFile,
+      FileConfig.salariesFile,
+      FileConfig.teammatesFile
+    } = do
+    priorityRecords <- loadRecords read prioritiesFile
+    salaryRecords <- loadRecords read salariesFile
+    teammateRecords <- loadRecords read teammatesFile
+    return $ BudgetRecords.T priorityRecords salaryRecords teammateRecords
 
 loadRecords :: Monad m => Csv.FromNamedRecord f => (Path.T -> App m Text) -> Path.T -> App m [f]
 loadRecords read filePath = do
@@ -79,7 +86,9 @@ runBudgetCommand actions budgetRecords =
    in lift $ Actions.print actions $ BudgetReport.toCsv report
 
 runRatiosCommand :: Monad m => Actions.T m -> BudgetRecords.T -> App m ()
-runRatiosCommand actions _ = lift $ Actions.print actions (RatioReport.toCsv $ RatioReport.T [RatioReport.Row "UX" 2.0 2.0 2.0 2.0])
+runRatiosCommand actions budgetRecords =
+  let report = RatioReportGenerator.generate $ BudgetRecords.teammateRecords budgetRecords
+   in lift $ Actions.print actions $ RatioReport.toCsv report
 
 printErrors :: Monad m => Actions.T m -> [ValidationError.T] -> App m ()
 printErrors actions errors =

@@ -10,7 +10,9 @@ import qualified Teams
 generate :: [TeammateRecord.T] -> RatioReport.T
 generate teammates =
   RatioReport.T
-    [ makeRow "Quality Assurance Engineer" teammates
+    [ makeRow "Product Manager" teammates,
+      makeRow "User Experience Designer" teammates,
+      makeRow "Quality Assurance Engineer" teammates
     ]
 
 makeRow :: Role.T -> [TeammateRecord.T] -> RatioReport.Row
@@ -27,10 +29,14 @@ ratios role teammates = (ratioInQ1, ratioInQ2, ratioInQ3, ratioInQ4)
     ratioInQ4 = ratioInQuarter role Quarter.Q4 teammates
 
 ratioInQuarter :: Role.T -> Quarter.T -> [TeammateRecord.T] -> Double
-ratioInQuarter role quarter teammates = seCount / roleCount
+ratioInQuarter role quarter teammates = ratio seCount roleCount
   where
     roleCount = fromIntegral $ length $ teammatesWithRole role quarter teammates
     seCount = fromIntegral $ length $ teammatesWithRole "Software Engineer" quarter teammates
+    ratio num den =
+      if den > 0.0
+        then num / den
+        else errorValue
 
 teammatesWithRole :: Role.T -> Quarter.T -> [TeammateRecord.T] -> [TeammateRecord.T]
 teammatesWithRole role quarter = filter (teammateHasRole role quarter)
@@ -41,3 +47,6 @@ teammateHasRole role quarter teammate =
 
 onSomeTeam :: Quarter.T -> TeammateRecord.T -> Bool
 onSomeTeam quarter teammate = Teams.toList (TeammateRecord.teams quarter teammate) /= ["None"]
+
+errorValue :: Double
+errorValue = -1.0
