@@ -20,6 +20,10 @@ spec = do
       let system = MockSystem.make (Argument.fromText <$> ["arg1", "arg2", "arg3", "arg4", "arg5"]) []
           (_, system') = StateActions.run (Application.run StateActions.make) system
        in MockSystem.printed system' `shouldBe` ["Usage: ./budgeting-exe <budget|ratios> <priorities-csv> <salaries-csv> <teammates-csv>"]
+    it "prints a helpful usage message an unknown report command is given" $ do
+      let system = MockSystem.make (Argument.fromText <$> ["boogers", "arg2", "arg3", "arg4"]) []
+          (_, system') = StateActions.run (Application.run StateActions.make) system
+       in MockSystem.printed system' `shouldBe` ["Usage: ./budgeting-exe <budget|ratios> <priorities-csv> <salaries-csv> <teammates-csv>"]
     it "prints an error when the priorities file is not found" $ do
       let system =
             MockSystem.make
