@@ -22,10 +22,10 @@ the future, we may make these values configurable via the command line or separa
 
 The report is printed to `stdout` in CSV format. The report has the following structure:
 
-| Priority | Spend Q1 | Spend Q2 | Spend Q3 | Spend Q4 |
-|----------|----------|----------|----------|----------|
-| Foobar   | 40.10    | 20.45    | 33.80    | 40.10    |
-| Barfoo   | 5.12     | 8.12     | 1.12     | 1.14     |
+| Priority | Spend Q1 | Spend Q2 | Spend Q3 | Spend Q4 | Spend FY |
+|----------|----------|----------|----------|----------|----------|
+| Foobar   | 40.10    | 20.45    | 33.80    | 40.10    | 134.45   |
+| Barfoo   | 5.12     | 8.12     | 1.12     | 1.14     | 15.5     |
 
 Dollar values are shown in _Millions_.
 
