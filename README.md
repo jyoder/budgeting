@@ -127,13 +127,15 @@ ignored by validations.
 This file contains the list of people in the organization and which teams they are assigned to each quarter. It has the
 following structure:
 
-| Bhc   | Name           | Teams Q1               | Teams Q2           | Teams Q3           | Teams Q4           |
-|-------|----------------|------------------------|--------------------|--------------------|--------------------|
-| 100   | Bob Bobberson  | "Hex Pistols,Goobers"  | Hex Pistols        | Hex Pistols        | None               |
-| 2000  | Amy Amerson    | Goobers                | Goobers            |                    | Goobers            |
+| Bhc   | Name           | Department  | Role                   | Teams Q1               | Teams Q2           | Teams Q3           | Teams Q4           |
+|-------|----------------|-------------|------------------------|------------------------|--------------------|--------------------|--------------------|
+| 100   | Bob Bobberson  | Development | Product Manager        | "Hex Pistols,Goobers"  | Hex Pistols        | Hex Pistols        | None               |
+| 2000  | Amy Amerson    | Development | Software Engineer      | Goobers                | Goobers            |                    | Goobers            |
 
 The `Bhc` column contains the _Budgeted Headcount_ ID for each person. This is a unique value used to identify a person. Each
 BHC that shows up in the teammates file _must_ have a corresponding entry in the salaries file.
+
+### Teams Columns
 
 In the teams columns, it is possible to specify that a person is on multiple teams. In this case, teams should be enclosed in
 quotes and separated by commas. Each team in the teams columns _must_ have a corresponding entry in the priorities file,
@@ -143,3 +145,24 @@ In the example above, no teams were specified for `Amy Amerson` in Q4. By defaul
 called `None` to ensure her cost is always accounted for. In this case, the `None` team _must_ appear in the priorities file,
 otherwise data validations will fail. It is also possible to assign people to the special `None` team as shown in the case of
 `Bob Bobberson` in Q4. 
+
+### Role Column
+
+The role column is used by the ratio report. Any value is allowed in this column, but the following values are treated
+specially for the purposes of the ratio report:
+
+* Product Manager
+* User Experience Designer
+* Software Engineer
+* Quality Assurance Engineer
+
+### Department Column
+
+Input files undergo a bit of _preprocessing_ prior to validation. One purpose of the preprocessing stage is to remove any
+teammates from the file who are not part of the product development organization. Current departments that are treated
+specially and removed from the input include:
+
+* Web Operations
+* Security
+
+It is not necessary for people with these roles to have a `Bhc` or to have a corresponding entry in the salaries file.
