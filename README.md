@@ -1,7 +1,7 @@
 # Overview
 
 A command line tool to generate reports used to manage the budget for a product development organization. Currently, two types
-of reports are available: *budget* and *ratio*.
+of reports are available: *budget* and *ratios*.
 
 ## Budget Report
 
